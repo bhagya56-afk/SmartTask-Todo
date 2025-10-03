@@ -1,0 +1,578 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - SmartTask</title>
+    <link rel="stylesheet" href="settings-style.css">
+</head>
+<body>
+<!-- Navigation Header -->
+<header class="settings-header">
+    <div class="header-content">
+        <div class="logo-section">
+            <a href="dashboard.html" class="logo">SmartTask</a>
+            <span class="page-title">Settings</span>
+        </div>
+        <div class="header-actions">
+            <a href="dashboard.html" class="back-btn">← Back to Dashboard</a>
+            <div class="profile-avatar">
+                <span id="profileInitials">JD</span>
+            </div>
+        </div>
+    </div>
+</header>
+
+<div class="settings-container">
+    <!-- Settings Sidebar -->
+    <aside class="settings-sidebar">
+        <nav class="settings-nav">
+            <h3>Settings</h3>
+            <ul>
+                <li><a href="#general" class="nav-item active" onclick="showSettingsSection('general')">⚙️ General</a></li>
+                <li><a href="#notifications" class="nav-item" onclick="showSettingsSection('notifications')">🔔 Notifications</a></li>
+                <li><a href="#appearance" class="nav-item" onclick="showSettingsSection('appearance')">🎨 Appearance</a></li>
+                <li><a href="#privacy" class="nav-item" onclick="showSettingsSection('privacy')">🔐 Privacy</a></li>
+                <li><a href="#data" class="nav-item" onclick="showSettingsSection('data')">💾 Data & Storage</a></li>
+                <li><a href="#about" class="nav-item" onclick="showSettingsSection('about')">ℹ️ About</a></li>
+            </ul>
+        </nav>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="settings-main">
+        <!-- General Settings -->
+        <section id="general" class="settings-section active">
+            <div class="section-header">
+                <h2>General Settings</h2>
+                <p>Configure your basic preferences and settings</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>Language & Region</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Language</label>
+                        <p>Choose your preferred language</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="en" selected>English</option>
+                        <option value="es">Español</option>
+                        <option value="fr">Français</option>
+                        <option value="de">Deutsch</option>
+                        <option value="zh">中文</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Time Zone</label>
+                        <p>Your local time zone for scheduling</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="UTC" selected>UTC (Coordinated Universal Time)</option>
+                        <option value="America/New_York">Eastern Time (US & Canada)</option>
+                        <option value="America/Chicago">Central Time (US & Canada)</option>
+                        <option value="America/Denver">Mountain Time (US & Canada)</option>
+                        <option value="America/Los_Angeles">Pacific Time (US & Canada)</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Date Format</label>
+                        <p>How dates are displayed</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="MM/DD/YYYY" selected>MM/DD/YYYY</option>
+                        <option value="DD/MM/YYYY">DD/MM/YYYY</option>
+                        <option value="YYYY-MM-DD">YYYY-MM-DD</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Default Task Settings</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Default Priority</label>
+                        <p>Priority level for new tasks</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="low">Low</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="high">High</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Default Category</label>
+                        <p>Category for new tasks</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="study" selected>Study</option>
+                        <option value="personal">Personal</option>
+                        <option value="work">Work</option>
+                        <option value="other">Other</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Notifications Settings -->
+        <section id="notifications" class="settings-section">
+            <div class="section-header">
+                <h2>Notification Settings</h2>
+                <p>Manage how and when you receive notifications</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>Push Notifications</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Enable Notifications</label>
+                        <p>Receive push notifications for important updates</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Task Reminders</label>
+                        <p>Get notified about upcoming task deadlines</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Daily Summary</label>
+                        <p>Receive a daily summary of your tasks</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Email Notifications</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Weekly Reports</label>
+                        <p>Get weekly productivity reports via email</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Marketing Emails</label>
+                        <p>Receive updates about new features and tips</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Reminder Settings</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Default Reminder Time</label>
+                        <p>How early to remind you before task deadlines</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="5">5 minutes before</option>
+                        <option value="15">15 minutes before</option>
+                        <option value="30" selected>30 minutes before</option>
+                        <option value="60">1 hour before</option>
+                        <option value="1440">1 day before</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Appearance Settings -->
+        <section id="appearance" class="settings-section">
+            <div class="section-header">
+                <h2>Appearance Settings</h2>
+                <p>Customize the look and feel of your dashboard</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>Theme</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Color Theme</label>
+                        <p>Choose between light and dark themes</p>
+                    </div>
+                    <div class="theme-selector">
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="light" checked>
+                            <div class="theme-preview light">
+                                <div class="theme-header"></div>
+                                <div class="theme-content"></div>
+                            </div>
+                            <span>Light</span>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="dark">
+                            <div class="theme-preview dark">
+                                <div class="theme-header"></div>
+                                <div class="theme-content"></div>
+                            </div>
+                            <span>Dark</span>
+                        </label>
+                        <label class="theme-option">
+                            <input type="radio" name="theme" value="auto">
+                            <div class="theme-preview auto">
+                                <div class="theme-header"></div>
+                                <div class="theme-content"></div>
+                            </div>
+                            <span>Auto</span>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Layout</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Compact Mode</label>
+                        <p>Show more information in less space</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Show Sidebar by Default</label>
+                        <p>Keep the sidebar expanded when you load the app</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Font Settings</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Font Size</label>
+                        <p>Adjust the text size throughout the app</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="small">Small</option>
+                        <option value="medium" selected>Medium</option>
+                        <option value="large">Large</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Privacy Settings -->
+        <section id="privacy" class="settings-section">
+            <div class="section-header">
+                <h2>Privacy Settings</h2>
+                <p>Control your privacy and data sharing preferences</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>Data Collection</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Analytics</label>
+                        <p>Help improve SmartTask by sharing usage data</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Crash Reports</label>
+                        <p>Automatically send crash reports to help fix bugs</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Account Privacy</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Profile Visibility</label>
+                        <p>Control who can see your profile information</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="private" selected>Private</option>
+                        <option value="friends">Friends only</option>
+                        <option value="public">Public</option>
+                    </select>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Show Online Status</label>
+                        <p>Let others see when you're active</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox">
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+            </div>
+        </section>
+
+        <!-- Data & Storage Settings -->
+        <section id="data" class="settings-section">
+            <div class="section-header">
+                <h2>Data & Storage</h2>
+                <p>Manage your data and storage options</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>Data Management</h3>
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Auto-save</label>
+                        <p>Automatically save your changes as you work</p>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" checked>
+                        <span class="toggle-slider"></span>
+                    </label>
+                </div>
+
+                <div class="setting-item">
+                    <div class="setting-info">
+                        <label>Data Retention</label>
+                        <p>How long to keep completed tasks</p>
+                    </div>
+                    <select class="setting-control">
+                        <option value="30">30 days</option>
+                        <option value="90" selected>90 days</option>
+                        <option value="365">1 year</option>
+                        <option value="forever">Forever</option>
+                    </select>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Export & Backup</h3>
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Export Data</label>
+                        <p>Download a copy of all your data</p>
+                    </div>
+                    <button class="action-btn" onclick="exportData()">Export</button>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Create Backup</label>
+                        <p>Create a backup of your tasks and settings</p>
+                    </div>
+                    <button class="action-btn" onclick="createBackup()">Backup</button>
+                </div>
+            </div>
+
+            <div class="settings-group danger-zone">
+                <h3>Danger Zone</h3>
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Clear All Data</label>
+                        <p>Permanently delete all your tasks and data</p>
+                    </div>
+                    <button class="action-btn danger" onclick="clearAllData()">Clear Data</button>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Delete Account</label>
+                        <p>Permanently delete your account and all associated data</p>
+                    </div>
+                    <button class="action-btn danger" onclick="deleteAccount()">Delete Account</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- About Settings -->
+        <section id="about" class="settings-section">
+            <div class="section-header">
+                <h2>About SmartTask</h2>
+                <p>Information about the application and support</p>
+            </div>
+
+            <div class="settings-group">
+                <h3>Application Info</h3>
+                <div class="info-item">
+                    <label>Version</label>
+                    <span>1.0.0</span>
+                </div>
+                <div class="info-item">
+                    <label>Last Updated</label>
+                    <span>December 2024</span>
+                </div>
+                <div class="info-item">
+                    <label>Build</label>
+                    <span>2024.12.001</span>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Support</h3>
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Help Center</label>
+                        <p>Get help and find answers to common questions</p>
+                    </div>
+                    <button class="action-btn" onclick="openHelp()">Open Help</button>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Report a Bug</label>
+                        <p>Let us know if you've found an issue</p>
+                    </div>
+                    <button class="action-btn" onclick="reportBug()">Report Bug</button>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Contact Support</label>
+                        <p>Get in touch with our support team</p>
+                    </div>
+                    <button class="action-btn" onclick="contactSupport()">Contact Us</button>
+                </div>
+            </div>
+
+            <div class="settings-group">
+                <h3>Legal</h3>
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Privacy Policy</label>
+                        <p>Read our privacy policy</p>
+                    </div>
+                    <button class="action-btn secondary" onclick="openPrivacyPolicy()">View Policy</button>
+                </div>
+
+                <div class="action-item">
+                    <div class="action-info">
+                        <label>Terms of Service</label>
+                        <p>Read our terms of service</p>
+                    </div>
+                    <button class="action-btn secondary" onclick="openTerms()">View Terms</button>
+                </div>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    // Initialize settings
+    document.addEventListener('DOMContentLoaded', function() {
+        loadUserInfo();
+    });
+
+    function loadUserInfo() {
+        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
+        if (currentUser.email) {
+            const name = currentUser.name || currentUser.email.split('@')[0];
+            const initials = name.substring(0, 2).toUpperCase();
+            document.getElementById('profileInitials').textContent = initials;
+        }
+    }
+
+    function showSettingsSection(sectionId) {
+        // Hide all sections
+        document.querySelectorAll('.settings-section').forEach(section => {
+            section.classList.remove('active');
+        });
+
+        // Remove active class from all nav items
+        document.querySelectorAll('.nav-item').forEach(item => {
+            item.classList.remove('active');
+        });
+
+        // Show selected section
+        document.getElementById(sectionId).classList.add('active');
+
+        // Add active class to clicked nav item
+        event.target.classList.add('active');
+    }
+
+    // Action functions
+    function exportData() {
+        alert('Data export feature coming soon!');
+    }
+
+    function createBackup() {
+        alert('Backup created successfully!');
+    }
+
+    function clearAllData() {
+        if (confirm('Are you sure you want to clear all your data? This action cannot be undone.')) {
+            localStorage.clear();
+            alert('All data has been cleared.');
+            window.location.href = 'login.html';
+        }
+    }
+
+    function deleteAccount() {
+        if (confirm('Are you sure you want to delete your account? This action cannot be undone and will permanently delete all your data.')) {
+            if (confirm('This is your final warning. Are you absolutely sure?')) {
+                localStorage.clear();
+                alert('Account deleted successfully.');
+                window.location.href = 'index.html';
+            }
+        }
+    }
+
+    function openHelp() {
+        alert('Help center feature coming soon!');
+    }
+
+    function reportBug() {
+        alert('Bug reporting feature coming soon!');
+    }
+
+    function contactSupport() {
+        alert('Support contact feature coming soon!');
+    }
+
+    function openPrivacyPolicy() {
+        alert('Privacy policy feature coming soon!');
+    }
+
+    function openTerms() {
+        alert('Terms of service feature coming soon!');
+    }
+</script>
+</body>
+</html>

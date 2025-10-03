@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SmartTask - Create Account</title>
+    <link rel="stylesheet" href="auth-style.css">
+</head>
+<body>
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-header">
+            <h1>Join SmartTask!</h1>
+            <p>Create your student account to get organized</p>
+        </div>
+
+        <form class="auth-form" id="registerForm" onsubmit="handleRegister(event)">
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="firstName">First Name</label>
+                    <input type="text" id="firstName" name="firstName" required
+                           placeholder="Enter first name">
+                </div>
+                <div class="form-group">
+                    <label for="lastName">Last Name</label>
+                    <input type="text" id="lastName" name="lastName" required
+                           placeholder="Enter last name">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required
+                       placeholder="Enter your student email">
+            </div>
+
+            <div class="form-group">
+                <label for="studentId">Student ID</label>
+                <input type="text" id="studentId" name="studentId" required
+                       placeholder="Enter your student ID">
+            </div>
+
+            <div class="form-row">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" name="password" required
+                           placeholder="Create password" minlength="6">
+                </div>
+                <div class="form-group">
+                    <label for="confirmPassword">Confirm Password</label>
+                    <input type="password" id="confirmPassword" name="confirmPassword" required
+                           placeholder="Confirm password">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="major">Major/Field of Study</label>
+                <select id="major" name="major" required>
+                    <option value="">Select your major</option>
+                    <option value="computer-science">Computer Science</option>
+                    <option value="engineering">Engineering</option>
+                    <option value="business">Business</option>
+                    <option value="mathematics">Mathematics</option>
+                    <option value="psychology">Psychology</option>
+                    <option value="biology">Biology</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="form-options">
+                <label class="checkbox-label">
+                    <input type="checkbox" name="terms" required>
+                    <span>I agree to the <a href="#">Terms of Service</a> and <a href="#">Privacy Policy</a></span>
+                </label>
+            </div>
+
+            <button type="submit" class="auth-btn primary">Create Account</button>
+
+            <div class="auth-divider">
+                <span>Already have an account?</span>
+            </div>
+
+            <a href="login.html" class="auth-btn secondary">Sign In</a>
+        </form>
+
+        <div class="back-to-home">
+            <a href="index.html">← Back to Home</a>
+        </div>
+    </div>
+
+    <div class="auth-illustration">
+        <div class="signup-figure">
+            <div class="graduation-cap"></div>
+            <div class="notebooks"></div>
+            <div class="calendar"></div>
+        </div>
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+    const supabaseUrl = "https://hfujdljobwilnfwpcaea.supabase.co";
+    const supabaseKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImhmdWpkbGpvYndpbG5md3BjYWVhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTg4NTc5ODYsImV4cCI6MjA3NDQzMzk4Nn0.LEpFZBWsnKHR5lZ0l7yPuWUodLhhUpZlthQVqi_eFBk";
+    const supabase = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+</script>
+
+<script>
+    // Handle Register Form Submission
+    // Handle Register Form Submission
+    async function handleRegister(event) {
+        event.preventDefault();
+
+        const firstName = document.getElementById('firstName').value;
+        const lastName = document.getElementById('lastName').value;
+        const email = document.getElementById('email').value;
+        const studentId = document.getElementById('studentId').value;
+        const password = document.getElementById('password').value;
+        const confirmPassword = document.getElementById('confirmPassword').value;
+        const major = document.getElementById('major').value;
+
+        if (password !== confirmPassword) {
+            showError("Passwords do not match");
+            return;
+        }
+
+        showLoading();
+
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: password,
+            options: {
+                data: {
+                    first_name: firstName,
+                    last_name: lastName,
+                    student_id: studentId,
+                    major: major
+                }
+            }
+        });
+
+        hideLoading();
+
+        if (error) {
+            showError("❌ Registration failed: " + error.message);
+        } else {
+            showSuccess("✅ Account created! Please check your email to verify.");
+            console.log("User created:", data);
+
+            setTimeout(() => {
+                window.location.href = "login.html";
+            }, 2000);
+        }
+    }
+
+
+    // Utility functions (same as login)
+    function isValidEmail(email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        return emailRegex.test(email);
+    }
+
+    function showError(message) {
+        showNotification(message, 'error');
+    }
+
+    function showSuccess(message) {
+        showNotification(message, 'success');
+    }
+
+    function showNotification(message, type = 'info') {
+        const existing = document.querySelector('.notification');
+        if (existing) existing.remove();
+
+        const notification = document.createElement('div');
+        notification.className = `notification notification-${type}`;
+        notification.textContent = message;
+
+        const colors = {
+            error: '#ef4444',
+            success: '#10b981',
+            info: '#3b82f6'
+        };
+
+        notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: ${colors[type]};
+                color: white;
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+                z-index: 10000;
+                font-weight: 600;
+                max-width: 300px;
+                animation: slideIn 0.3s ease;
+            `;
+
+        document.body.appendChild(notification);
+
+        setTimeout(() => {
+            if (notification.parentNode) {
+                notification.remove();
+            }
+        }, 4000);
+    }
+
+    function showLoading() {
+        const loading = document.createElement('div');
+        loading.id = 'loading-overlay';
+        loading.style.cssText = `
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(255, 255, 255, 0.9);
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                z-index: 9999;
+            `;
+
+        loading.innerHTML = `
+                <div style="text-align: center;">
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border: 4px solid #e2e8f0;
+                        border-top: 4px solid #7c3aed;
+                        border-radius: 50%;
+                        animation: spin 1s linear infinite;
+                        margin: 0 auto 1rem;
+                    "></div>
+                    <p style="color: #64748b; font-weight: 600;">Creating account...</p>
+                </div>
+            `;
+
+        const style = document.createElement('style');
+        style.textContent = `
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+        document.head.appendChild(style);
+        document.body.appendChild(loading);
+    }
+
+    function hideLoading() {
+        const loading = document.getElementById('loading-overlay');
+        if (loading) loading.remove();
+    }
+
+    // Real-time validation
+    document.addEventListener('DOMContentLoaded', function() {
+        const passwordInput = document.getElementById('password');
+        const confirmPasswordInput = document.getElementById('confirmPassword');
+
+        if (confirmPasswordInput && passwordInput) {
+            confirmPasswordInput.addEventListener('input', function() {
+                if (this.value && this.value !== passwordInput.value) {
+                    this.style.borderColor = '#ef4444';
+                } else {
+                    this.style.borderColor = '';
+                }
+            });
+        }
+    });
+</script>
+<script type="module">
+    import { createClient } from 'https://esm.sh/@supabase/supabase-js@2';
+
+    const supabase = createClient("https://YOUR_PROJECT.supabase.co", "YOUR_PUBLIC_ANON_KEY");
+
+    const registerForm = document.getElementById("registerForm");
+
+    registerForm.addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const firstName = document.getElementById("firstName").value.trim();
+        const lastName = document.getElementById("lastName").value.trim();
+        const email = document.getElementById("email").value.trim();
+        const password = document.getElementById("password").value;
+
+        const { data, error } = await supabase.auth.signUp({
+            email,
+            password,
+            options: {
+                data: {
+                    first_name: firstName,
+                    last_name: lastName
+                }
+            }
+        });
+
+        if (error) {
+            showNotification("Error: " + error.message);
+        } else {
+
+            // store to localStorage for profile page
+            localStorage.setItem('currentUser', JSON.stringify({
+                email,
+                firstName,
+                lastName
+            }));
+            window.location.href = "dashboard.html"; // or profile.html
+        }
+    });
+</script>
+
+</body>
+</html>
