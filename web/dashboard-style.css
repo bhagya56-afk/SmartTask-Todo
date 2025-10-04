@@ -1,4 +1,6 @@
-/* Reset and Base Styles */
+/* ===========================
+   Reset and Base Styles
+   =========================== */
 * {
     margin: 0;
     padding: 0;
@@ -12,7 +14,9 @@ body {
     line-height: 1.6;
 }
 
-/* Dashboard Header */
+/* ===========================
+   Dashboard Header
+   =========================== */
 .dashboard-header {
     background: white;
     border-bottom: 1px solid #e2e8f0;
@@ -120,14 +124,18 @@ body {
     border-bottom: none;
 }
 
-/* Dashboard Container */
+/* ===========================
+   Dashboard Container
+   =========================== */
 .dashboard-container {
     display: grid;
     grid-template-columns: 250px 1fr;
     min-height: calc(100vh - 80px);
 }
 
-/* Sidebar */
+/* ===========================
+   Sidebar
+   =========================== */
 .sidebar {
     background: white;
     border-right: 1px solid #e2e8f0;
@@ -181,7 +189,9 @@ body {
     color: white;
 }
 
-/* Main Content */
+/* ===========================
+   Main Content
+   =========================== */
 .main-content {
     padding: 2rem;
     overflow-y: auto;
@@ -214,7 +224,9 @@ body {
     align-items: center;
 }
 
-/* Buttons */
+/* ===========================
+   Buttons
+   =========================== */
 .btn {
     padding: 0.75rem 1.5rem;
     border: none;
@@ -226,6 +238,7 @@ body {
     display: inline-flex;
     align-items: center;
     gap: 0.5rem;
+    font-size: 1rem;
 }
 
 .btn-primary {
@@ -253,7 +266,31 @@ body {
     color: white;
 }
 
-/* Stats Grid */
+.btn-icon {
+    padding: 0.5rem;
+    border: none;
+    background: transparent;
+    cursor: pointer;
+    border-radius: 4px;
+    font-size: 1rem;
+    transition: background-color 0.2s;
+}
+
+.btn-icon:hover {
+    background: #f1f5f9;
+}
+
+.btn-icon.edit:hover {
+    background: #dbeafe;
+}
+
+.btn-icon.delete:hover {
+    background: #fee2e2;
+}
+
+/* ===========================
+   Stats Grid
+   =========================== */
 .stats-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
@@ -300,7 +337,9 @@ body {
     font-size: 0.9rem;
 }
 
-/* Content Sections */
+/* ===========================
+   Content Sections
+   =========================== */
 .content-section {
     background: white;
     border-radius: 12px;
@@ -316,7 +355,9 @@ body {
     color: #1e293b;
 }
 
-/* Task List */
+/* ===========================
+   Task List
+   =========================== */
 .task-list {
     padding: 1rem;
     display: flex;
@@ -359,9 +400,6 @@ body {
     width: 20px;
     height: 20px;
     accent-color: #7c3aed;
-}
-
-.task-checkbox label {
     cursor: pointer;
 }
 
@@ -385,76 +423,62 @@ body {
     gap: 0.5rem;
 }
 
-.btn-icon {
-    padding: 0.5rem;
-    border: none;
-    background: transparent;
-    cursor: pointer;
-    border-radius: 4px;
-    font-size: 1rem;
-    transition: background-color 0.2s;
-}
-
-.btn-icon:hover {
-    background: #f1f5f9;
-}
-
-.btn-icon.edit:hover {
-    background: #dbeafe;
-}
-
-.btn-icon.delete:hover {
-    background: #fee2e2;
-}
-
-/* Filter Select */
+/* ===========================
+   Forms
+   =========================== */
 .filter-select {
     padding: 0.5rem 1rem;
     border: 1px solid #e2e8f0;
     border-radius: 8px;
     background: white;
     color: #64748b;
-}
-
-/* Calendar */
-.calendar-container {
-    background: white;
-    border-radius: 12px;
-    border: 1px solid #e2e8f0;
-    padding: 1.5rem;
-}
-
-.calendar-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    margin-bottom: 1rem;
-}
-
-.nav-btn {
-    padding: 0.5rem 1rem;
-    border: 1px solid #e2e8f0;
-    background: white;
-    border-radius: 8px;
     cursor: pointer;
-    transition: all 0.2s;
 }
 
-.nav-btn:hover {
-    background: #f1f5f9;
-    border-color: #7c3aed;
+.form-group {
+    margin-bottom: 1.5rem;
 }
 
-.calendar-grid {
+.form-row {
     display: grid;
-    grid-template-columns: repeat(7, 1fr);
-    gap: 1px;
-    background: #e2e8f0;
-    border-radius: 8px;
-    overflow: hidden;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
 }
 
-/* Modal */
+.form-group label {
+    display: block;
+    font-weight: 600;
+    color: #374151;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 0.75rem;
+    border: 1px solid #e2e8f0;
+    border-radius: 8px;
+    font-size: 1rem;
+    transition: border-color 0.2s;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #7c3aed;
+    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ===========================
+   Modal
+   =========================== */
 .modal {
     display: none;
     position: fixed;
@@ -514,50 +538,8 @@ body {
     color: #64748b;
 }
 
-/* Form Styles */
 .task-form {
     padding: 1.5rem;
-}
-
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-row {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 1rem;
-}
-
-.form-group label {
-    display: block;
-    font-weight: 600;
-    color: #374151;
-    margin-bottom: 0.5rem;
-}
-
-.form-group input,
-.form-group select,
-.form-group textarea {
-    width: 100%;
-    padding: 0.75rem;
-    border: 1px solid #e2e8f0;
-    border-radius: 8px;
-    font-size: 1rem;
-    transition: border-color 0.2s;
-}
-
-.form-group input:focus,
-.form-group select:focus,
-.form-group textarea:focus {
-    outline: none;
-    border-color: #7c3aed;
-    box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1);
-}
-
-.form-group textarea {
-    resize: vertical;
-    min-height: 80px;
 }
 
 .modal-actions {
@@ -568,7 +550,49 @@ body {
     border-top: 1px solid #e2e8f0;
 }
 
-/* Responsive Design */
+/* ===========================
+   Calendar
+   =========================== */
+.calendar-container {
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e2e8f0;
+    padding: 1.5rem;
+}
+
+.calendar-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1rem;
+}
+
+.nav-btn {
+    padding: 0.5rem 1rem;
+    border: 1px solid #e2e8f0;
+    background: white;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.nav-btn:hover {
+    background: #f1f5f9;
+    border-color: #7c3aed;
+}
+
+.calendar-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1px;
+    background: #e2e8f0;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ===========================
+   Responsive Design
+   =========================== */
 @media (max-width: 768px) {
     .dashboard-container {
         grid-template-columns: 1fr;

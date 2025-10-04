@@ -1,10 +1,12 @@
 package models;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
+/**
+ * Student - Represents a student user in the system
+ * Demonstrates OOP principle: Encapsulation
+ */
 public class Student {
-    // Private attributes (Encapsulation)
     private String email;
     private String firstName;
     private String lastName;
@@ -15,14 +17,13 @@ public class Student {
     private LocalDateTime lastLoginAt;
     private boolean isActive;
 
-    // Default Constructor
     public Student() {
         this.createdAt = LocalDateTime.now();
         this.isActive = true;
     }
 
-    // Parameterized Constructor
-    public Student(String email, String firstName, String lastName, String studentId, String major, String hashedPassword) {
+    public Student(String email, String firstName, String lastName,
+                   String studentId, String major, String hashedPassword) {
         this();
         this.email = email;
         this.firstName = firstName;
@@ -32,151 +33,68 @@ public class Student {
         this.hashedPassword = hashedPassword;
     }
 
-    // Getters and Setters (Encapsulation)
-    public String getEmail() {
-        return email;
-    }
+    // Getters and Setters
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
 
-    public void setEmail(String email) {
-        this.email = email;
-    }
+    public String getFirstName() { return firstName; }
+    public void setFirstName(String firstName) { this.firstName = firstName; }
 
-    public String getFirstName() {
-        return firstName;
-    }
+    public String getLastName() { return lastName; }
+    public void setLastName(String lastName) { this.lastName = lastName; }
 
-    public void setFirstName(String firstName) {
-        this.firstName = firstName;
-    }
+    public String getStudentId() { return studentId; }
+    public void setStudentId(String studentId) { this.studentId = studentId; }
 
-    public String getLastName() {
-        return lastName;
-    }
+    public String getMajor() { return major; }
+    public void setMajor(String major) { this.major = major; }
 
-    public void setLastName(String lastName) {
-        this.lastName = lastName;
-    }
+    public String getHashedPassword() { return hashedPassword; }
+    public void setHashedPassword(String hashedPassword) { this.hashedPassword = hashedPassword; }
 
-    public String getStudentId() {
-        return studentId;
-    }
+    public LocalDateTime getCreatedAt() { return createdAt; }
+    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
 
-    public void setStudentId(String studentId) {
-        this.studentId = studentId;
-    }
+    public LocalDateTime getLastLoginAt() { return lastLoginAt; }
+    public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
 
-    public String getMajor() {
-        return major;
-    }
-
-    public void setMajor(String major) {
-        this.major = major;
-    }
-
-    public String getHashedPassword() {
-        return hashedPassword;
-    }
-
-    public void setHashedPassword(String hashedPassword) {
-        this.hashedPassword = hashedPassword;
-    }
-
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-
-    public LocalDateTime getLastLoginAt() {
-        return lastLoginAt;
-    }
-
-    public void setLastLoginAt(LocalDateTime lastLoginAt) {
-        this.lastLoginAt = lastLoginAt;
-    }
-
-    public boolean isActive() {
-        return isActive;
-    }
-
-    public void setActive(boolean active) {
-        isActive = active;
-    }
+    public boolean isActive() { return isActive; }
+    public void setActive(boolean active) { isActive = active; }
 
     // Business Logic Methods
-
-    /**
-     * Get full name of the student
-     */
     public String getFullName() {
         return firstName + " " + lastName;
     }
 
-    /**
-     * Get initials of the student for avatar
-     */
     public String getInitials() {
-        String initials = "";
+        StringBuilder initials = new StringBuilder();
         if (firstName != null && !firstName.isEmpty()) {
-            initials += firstName.charAt(0);
+            initials.append(firstName.charAt(0));
         }
         if (lastName != null && !lastName.isEmpty()) {
-            initials += lastName.charAt(0);
+            initials.append(lastName.charAt(0));
         }
-        return initials.toUpperCase();
+        return initials.toString().toUpperCase();
     }
 
-    /**
-     * Update last login timestamp
-     */
     public void updateLastLogin() {
         this.lastLoginAt = LocalDateTime.now();
     }
 
-    /**
-     * Deactivate student account
-     */
     public void deactivate() {
         this.isActive = false;
     }
 
-    /**
-     * Activate student account
-     */
     public void activate() {
         this.isActive = true;
     }
 
-    /**
-     * Get student's tasks using TaskManager
-     */
-    public List<Task> getTasks() {
-        TaskManager taskManager = new TaskManager();
-        return taskManager.getTasksByStudent(this.email);
-    }
-
-    /**
-     * Get student's task statistics
-     */
-    public TaskManager.TaskStats getTaskStats() {
-        TaskManager taskManager = new TaskManager();
-        return taskManager.getTaskStats(this.email);
-    }
-
-    /**
-     * Add a new task for this student
-     */
-    public Task addTask(String title, String description, String category, Task.Priority priority, LocalDateTime dueDate) {
-        TaskManager taskManager = new TaskManager();
-        return taskManager.addTask(title, description, category, priority, dueDate, this.email);
-    }
-
-    // Convert to JSON for frontend communication
+    // JSON conversion for frontend
     public String toJson() {
         return String.format(
-                "{\"email\":\"%s\",\"firstName\":\"%s\",\"lastName\":\"%s\",\"studentId\":\"%s\",\"major\":\"%s\",\"createdAt\":\"%s\",\"lastLoginAt\":%s,\"isActive\":%b}",
+                "{\"email\":\"%s\",\"firstName\":\"%s\",\"lastName\":\"%s\"," +
+                        "\"studentId\":\"%s\",\"major\":\"%s\",\"createdAt\":\"%s\"," +
+                        "\"lastLoginAt\":%s,\"isActive\":%b}",
                 email, firstName, lastName, studentId, major,
                 createdAt.toString(),
                 lastLoginAt != null ? "\"" + lastLoginAt.toString() + "\"" : "null",
@@ -184,22 +102,22 @@ public class Student {
         );
     }
 
-    // Convert to string for file storage
+    // File storage format
     public String toFileString() {
         return String.join("|",
-                email,
-                firstName,
-                lastName,
-                studentId,
-                major,
-                hashedPassword,
+                email != null ? email : "",
+                firstName != null ? firstName : "",
+                lastName != null ? lastName : "",
+                studentId != null ? studentId : "",
+                major != null ? major : "",
+                hashedPassword != null ? hashedPassword : "",
                 createdAt.toString(),
                 lastLoginAt != null ? lastLoginAt.toString() : "null",
                 String.valueOf(isActive)
         );
     }
 
-    // Parse student from file string
+    // Parse from file
     public static Student fromFileString(String line) {
         try {
             String[] parts = line.split("\\|");
@@ -219,7 +137,7 @@ public class Student {
                 return student;
             }
         } catch (Exception e) {
-            System.out.println("Error parsing student: " + line + " - " + e.getMessage());
+            System.err.println("Error parsing student: " + e.getMessage());
         }
         return null;
     }
@@ -235,11 +153,11 @@ public class Student {
         if (this == obj) return true;
         if (obj == null || getClass() != obj.getClass()) return false;
         Student student = (Student) obj;
-        return email.equals(student.email);
+        return email != null && email.equals(student.email);
     }
 
     @Override
     public int hashCode() {
-        return email.hashCode();
+        return email != null ? email.hashCode() : 0;
     }
 }

@@ -1,8 +1,14 @@
-/* Reset and Base Styles */
+/* ===========================
+   Reset and Base Styles
+   =========================== */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+}
+
+html {
+    scroll-behavior: smooth;
 }
 
 body {
@@ -18,7 +24,9 @@ body {
     padding: 0 2rem;
 }
 
-/* Header Styles */
+/* ===========================
+   Header & Navigation
+   =========================== */
 header {
     position: fixed;
     top: 0;
@@ -53,6 +61,7 @@ nav {
     content: "✓";
     background: linear-gradient(45deg, #f59e0b, #ef4444);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     font-size: 2rem;
 }
@@ -91,7 +100,9 @@ nav {
     background: linear-gradient(135deg, #6d28d9, #9333ea) !important;
 }
 
-/* Hero Section */
+/* ===========================
+   Hero Section
+   =========================== */
 .hero {
     min-height: 100vh;
     background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
@@ -109,9 +120,8 @@ nav {
     left: 0;
     right: 0;
     bottom: 0;
-    background:
-            radial-gradient(ellipse 100px 40px at 20% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
-            radial-gradient(ellipse 80px 30px at 85% 15%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
+    background: radial-gradient(ellipse 100px 40px at 20% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+    radial-gradient(ellipse 80px 30px at 85% 15%, rgba(255, 255, 255, 0.2) 0%, transparent 50%);
     z-index: 1;
 }
 
@@ -129,6 +139,7 @@ nav {
 
 .hero-text {
     color: white;
+    animation: fadeInUp 1s ease-out;
 }
 
 .hero-text h1 {
@@ -147,6 +158,7 @@ nav {
 .list-text {
     background: linear-gradient(45deg, #fbbf24, #f59e0b);
     -webkit-background-clip: text;
+    background-clip: text;
     -webkit-text-fill-color: transparent;
     display: block;
 }
@@ -176,6 +188,8 @@ nav {
     text-decoration: none;
     display: inline-block;
     text-align: center;
+    position: relative;
+    overflow: hidden;
 }
 
 .btn-primary {
@@ -206,11 +220,14 @@ nav {
     font-size: 1.2rem;
 }
 
-/* Hero Illustration */
+/* ===========================
+   Hero Illustration
+   =========================== */
 .hero-illustration {
     position: relative;
     width: 100%;
     height: 500px;
+    animation: fadeInUp 1s ease-out 0.3s both;
 }
 
 .todo-device {
@@ -261,6 +278,7 @@ nav {
     justify-content: center;
     font-size: 14px;
     color: transparent;
+    flex-shrink: 0;
 }
 
 .checkbox.checked {
@@ -317,6 +335,18 @@ nav {
     border-radius: 25px 25px 0 0;
 }
 
+.team-member::before {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 25px;
+    height: 25px;
+    background: #fbbf24;
+    border-radius: 50%;
+}
+
 .member-1 {
     bottom: 10%;
     left: 10%;
@@ -347,18 +377,7 @@ nav {
     background: linear-gradient(135deg, #ef4444, #dc2626);
 }
 
-.team-member::before {
-    content: '';
-    position: absolute;
-    top: 8px;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 25px;
-    height: 25px;
-    background: #fbbf24;
-    border-radius: 50%;
-}
-
+/* Decorative Elements */
 .pencil-element {
     position: absolute;
     top: 35%;
@@ -389,16 +408,12 @@ nav {
     left: 32%;
     width: 15px;
     height: 100px;
-    background: repeating-linear-gradient(
-            0deg,
-            #8b5cf6 0px,
-            #8b5cf6 8px,
-            transparent 8px,
-            transparent 16px
-    );
+    background: repeating-linear-gradient(0deg, #8b5cf6 0px, #8b5cf6 8px, transparent 8px, transparent 16px);
 }
 
-/* Features Section */
+/* ===========================
+   Features Section
+   =========================== */
 .features {
     padding: 6rem 0;
     background: #f8fafc;
@@ -452,7 +467,9 @@ nav {
     line-height: 1.6;
 }
 
-/* CTA Section */
+/* ===========================
+   CTA Section
+   =========================== */
 .cta-section {
     padding: 6rem 0;
     background: linear-gradient(135deg, #7c3aed 0%, #a855f7 100%);
@@ -475,7 +492,9 @@ nav {
     margin-right: auto;
 }
 
-/* Footer */
+/* ===========================
+   Footer
+   =========================== */
 footer {
     background: #1e293b;
     color: white;
@@ -489,7 +508,8 @@ footer {
     margin-bottom: 2rem;
 }
 
-.footer-section h3, .footer-section h4 {
+.footer-section h3,
+.footer-section h4 {
     margin-bottom: 1rem;
     color: #f1f5f9;
 }
@@ -524,7 +544,44 @@ footer {
     color: #94a3b8;
 }
 
-/* Responsive Design */
+/* ===========================
+   Animations
+   =========================== */
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes ripple {
+    to {
+        transform: scale(2);
+        opacity: 0;
+    }
+}
+
+.animate-in {
+    opacity: 1 !important;
+    transform: translateY(0) !important;
+}
+
+.ripple {
+    position: absolute;
+    background: rgba(255, 255, 255, 0.4);
+    border-radius: 50%;
+    pointer-events: none;
+    transform: scale(0);
+    animation: ripple 0.6s linear;
+}
+
+/* ===========================
+   Responsive Design
+   =========================== */
 @media (max-width: 1024px) {
     .hero-content {
         grid-template-columns: 1fr;
@@ -554,13 +611,19 @@ footer {
         font-size: 3rem;
     }
 
+    .hero-text p {
+        margin-left: auto;
+        margin-right: auto;
+    }
+
     .cta-buttons {
         flex-direction: column;
         align-items: center;
     }
 
     .btn {
-        width: 250px;
+        width: 100%;
+        max-width: 250px;
     }
 
     .features {
@@ -597,29 +660,13 @@ footer {
     .feature-card {
         padding: 1.5rem;
     }
-}
 
-/* Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
+    .hero-illustration {
+        height: 350px;
     }
-    to {
-        opacity: 1;
-        transform: translateY(0);
+
+    .todo-device {
+        width: 280px;
+        height: 350px;
     }
-}
-
-.hero-text {
-    animation: fadeInUp 1s ease-out;
-}
-
-.hero-illustration {
-    animation: fadeInUp 1s ease-out 0.3s both;
-}
-
-/* Smooth scrolling */
-html {
-    scroll-behavior: smooth;
 }

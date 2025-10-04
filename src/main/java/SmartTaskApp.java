@@ -1,31 +1,22 @@
-
-
 import models.*;
-import utils.*;
 import auth.AuthManager;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 import java.util.Scanner;
 
 /**
- * SmartTaskApp - Main application class demonstrating OOP principles
- *
- * OOP Principles Demonstrated:
- * 1. Encapsulation - Private fields with public getters/setters
- * 2. Inheritance - Could extend this for different app types
- * 3. Polymorphism - Method overloading, interface implementations
- * 4. Abstraction - Abstract concepts like TaskManager, AuthManager
+ * SmartTaskApp - Main application class
+ * Demonstrates OOP principles: Encapsulation, Abstraction
  */
 public class SmartTaskApp {
-    // Private attributes (Encapsulation)
     private AuthManager authManager;
     private TaskManager taskManager;
     private Student currentStudent;
     private Scanner scanner;
     private boolean isRunning;
 
-    // Constructor
     public SmartTaskApp() {
         this.authManager = new AuthManager();
         this.taskManager = new TaskManager();
@@ -33,9 +24,6 @@ public class SmartTaskApp {
         this.isRunning = true;
     }
 
-    /**
-     * Main entry point of the application
-     */
     public static void main(String[] args) {
         SmartTaskApp app = new SmartTaskApp();
         app.start();
@@ -49,16 +37,18 @@ public class SmartTaskApp {
         System.out.println("    Welcome to SmartTask App    ");
         System.out.println("=================================");
 
-        while (isRunning) {
-            if (currentStudent == null) {
-                showLoginMenu();
-            } else {
-                showMainMenu();
+        try {
+            while (isRunning) {
+                if (currentStudent == null) {
+                    showLoginMenu();
+                } else {
+                    showMainMenu();
+                }
             }
+        } finally {
+            scanner.close();
+            System.out.println("Thank you for using SmartTask!");
         }
-
-        scanner.close();
-        System.out.println("Thank you for using SmartTask!");
     }
 
     /**
@@ -96,7 +86,7 @@ public class SmartTaskApp {
         System.out.println("Welcome, " + currentStudent.getFullName() + "!");
 
         // Display quick stats
-        TaskManager.TaskStats stats = currentStudent.getTaskStats();
+        TaskManager.TaskStats stats = taskManager.getTaskStats(currentStudent.getEmail());
         System.out.printf("Tasks: %d Total | %d Completed | %d Pending | %d Due Today%n",
                 stats.getTotal(), stats.getCompleted(), stats.getPending(), stats.getDueToday());
 
@@ -117,39 +107,17 @@ public class SmartTaskApp {
         int choice = getIntegerInput();
 
         switch (choice) {
-            case 1:
-                viewAllTasks();
-                break;
-            case 2:
-                addNewTask();
-                break;
-            case 3:
-                completeTask();
-                break;
-            case 4:
-                editTask();
-                break;
-            case 5:
-                deleteTask();
-                break;
-            case 6:
-                viewTasksByCategory();
-                break;
-            case 7:
-                viewTasksByPriority();
-                break;
-            case 8:
-                viewOverdueTasks();
-                break;
-            case 9:
-                searchTasks();
-                break;
-            case 10:
-                showProfile();
-                break;
-            case 11:
-                logout();
-                break;
+            case 1: viewAllTasks(); break;
+            case 2: addNewTask(); break;
+            case 3: completeTask(); break;
+            case 4: editTask(); break;
+            case 5: deleteTask(); break;
+            case 6: viewTasksByCategory(); break;
+            case 7: viewTasksByPriority(); break;
+            case 8: viewOverdueTasks(); break;
+            case 9: searchTasks(); break;
+            case 10: showProfile(); break;
+            case 11: logout(); break;
             default:
                 System.out.println("Invalid option. Please try again.");
         }
@@ -168,7 +136,6 @@ public class SmartTaskApp {
         Student student = authManager.login(email, password);
         if (student != null) {
             currentStudent = student;
-            student.updateLastLogin();
             System.out.println("Login successful! Welcome back, " + student.getFirstName());
         } else {
             System.out.println("Invalid credentials. Please try again.");
@@ -190,24 +157,39 @@ public class SmartTaskApp {
         System.out.print("Email: ");
         String email = scanner.nextLine().trim();
 
+        if (!AuthManager.isValidEmail(email)) {
+            System.out.println("Invalid email format.");
+            return;
+        }
+
+        if (authManager.emailExists(email)) {
+            System.out.println("Email already registered.");
+            return;
+        }
+
         System.out.print("Student ID: ");
         String studentId = scanner.nextLine().trim();
 
         System.out.print("Major: ");
         String major = scanner.nextLine().trim();
 
-        System.out.print("Password: ");
+        System.out.print("Password (min 6 characters): ");
         String password = scanner.nextLine().trim();
+
+        if (!AuthManager.isValidPassword(password)) {
+            System.out.println("Password must be at least 6 characters.");
+            return;
+        }
 
         if (authManager.register(firstName, lastName, email, studentId, major, password)) {
             System.out.println("Registration successful! You can now login.");
         } else {
-            System.out.println("Registration failed. Email may already exist.");
+            System.out.println("Registration failed. Please try again.");
         }
     }
 
     /**
-     * View all tasks for current student
+     * View all tasks
      */
     private void viewAllTasks() {
         List<Task> tasks = taskManager.getTasksByStudent(currentStudent.getEmail());
@@ -223,6 +205,11 @@ public class SmartTaskApp {
         System.out.print("Task Title: ");
         String title = scanner.nextLine().trim();
 
+        if (title.isEmpty()) {
+            System.out.println("Title cannot be empty.");
+            return;
+        }
+
         System.out.print("Description: ");
         String description = scanner.nextLine().trim();
 
@@ -236,7 +223,7 @@ public class SmartTaskApp {
         System.out.print("Due Date (YYYY-MM-DD): ");
         String dateStr = scanner.nextLine().trim();
 
-        System.out.print("Due Time (HH:MM) [optional]: ");
+        System.out.print("Due Time (HH:MM) [optional, press Enter to skip]: ");
         String timeStr = scanner.nextLine().trim();
 
         try {
@@ -250,13 +237,15 @@ public class SmartTaskApp {
             Task newTask = taskManager.addTask(title, description, category, priority, dueDate, currentStudent.getEmail());
             System.out.println("Task added successfully! ID: " + newTask.getId());
 
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format. Please use YYYY-MM-DD and HH:MM.");
         } catch (Exception e) {
-            System.out.println("Error adding task. Please check the date format.");
+            System.out.println("Error adding task: " + e.getMessage());
         }
     }
 
     /**
-     * Mark a task as completed
+     * Mark task as completed
      */
     private void completeTask() {
         List<Task> pendingTasks = taskManager.getPendingTasks(currentStudent.getEmail());
@@ -270,15 +259,21 @@ public class SmartTaskApp {
         System.out.print("Enter task ID to complete: ");
         int taskId = getIntegerInput();
 
+        Task task = taskManager.getTaskById(taskId);
+        if (task == null || !task.getStudentEmail().equals(currentStudent.getEmail())) {
+            System.out.println("Task not found.");
+            return;
+        }
+
         if (taskManager.completeTask(taskId)) {
             System.out.println("Task completed successfully!");
         } else {
-            System.out.println("Task not found or already completed.");
+            System.out.println("Failed to complete task.");
         }
     }
 
     /**
-     * Edit an existing task
+     * Edit task
      */
     private void editTask() {
         List<Task> tasks = taskManager.getTasksByStudent(currentStudent.getEmail());
@@ -326,12 +321,12 @@ public class SmartTaskApp {
                 System.out.println("Failed to update task.");
             }
         } catch (Exception e) {
-            System.out.println("Error updating task. Please check the date format.");
+            System.out.println("Error updating task: " + e.getMessage());
         }
     }
 
     /**
-     * Delete a task
+     * Delete task
      */
     private void deleteTask() {
         List<Task> tasks = taskManager.getTasksByStudent(currentStudent.getEmail());
@@ -395,7 +390,7 @@ public class SmartTaskApp {
     }
 
     /**
-     * Search tasks by title
+     * Search tasks
      */
     private void searchTasks() {
         System.out.print("Enter search term: ");
@@ -406,7 +401,7 @@ public class SmartTaskApp {
     }
 
     /**
-     * Show user profile
+     * Show profile
      */
     private void showProfile() {
         System.out.println("\n=== Profile Information ===");
@@ -416,7 +411,7 @@ public class SmartTaskApp {
         System.out.println("Major: " + currentStudent.getMajor());
         System.out.println("Member since: " + currentStudent.getCreatedAt().toLocalDate());
 
-        TaskManager.TaskStats stats = currentStudent.getTaskStats();
+        TaskManager.TaskStats stats = taskManager.getTaskStats(currentStudent.getEmail());
         System.out.println("\n=== Task Statistics ===");
         System.out.println("Total Tasks: " + stats.getTotal());
         System.out.println("Completed: " + stats.getCompleted());
@@ -426,7 +421,7 @@ public class SmartTaskApp {
     }
 
     /**
-     * Logout current user
+     * Logout
      */
     private void logout() {
         System.out.println("Goodbye, " + currentStudent.getFirstName() + "!");
@@ -434,7 +429,7 @@ public class SmartTaskApp {
     }
 
     /**
-     * Display a list of tasks in a formatted way
+     * Display tasks in formatted table
      */
     private void displayTasks(List<Task> tasks, String title) {
         System.out.println("\n=== " + title + " ===");
@@ -448,16 +443,20 @@ public class SmartTaskApp {
 
         System.out.printf("%-4s %-30s %-15s %-10s %-20s %-10s%n",
                 "ID", "Title", "Category", "Priority", "Due Date", "Status");
-        System.out.println("=".repeat(90));
+        System.out.println("=".repeat(95));
 
         for (Task task : tasks) {
             String status = task.isCompleted() ? "✓ Done" :
                     task.isOverdue() ? "⚠ Overdue" :
-                            task.isDueToday() ? "⏰ Due Today" : "Pending";
+                            task.isDueToday() ? "⏰ Today" : "Pending";
+
+            String displayTitle = task.getTitle().length() > 30
+                    ? task.getTitle().substring(0, 27) + "..."
+                    : task.getTitle();
 
             System.out.printf("%-4d %-30s %-15s %-10s %-20s %-10s%n",
                     task.getId(),
-                    task.getTitle().length() > 30 ? task.getTitle().substring(0, 27) + "..." : task.getTitle(),
+                    displayTitle,
                     task.getCategory(),
                     task.getPriority().getValue().toUpperCase(),
                     task.getDueDate().format(formatter),
@@ -466,7 +465,7 @@ public class SmartTaskApp {
     }
 
     /**
-     * Get integer input with error handling
+     * Get integer input with validation
      */
     private int getIntegerInput() {
         while (true) {
@@ -480,7 +479,7 @@ public class SmartTaskApp {
     }
 
     /**
-     * Get string input or return default value if empty
+     * Get string input or return default
      */
     private String getStringInputOrDefault(String defaultValue) {
         String input = scanner.nextLine().trim();

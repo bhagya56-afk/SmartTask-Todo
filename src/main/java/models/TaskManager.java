@@ -5,17 +5,16 @@ import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
+/**
+ * TaskManager - Manages all task operations
+ * Demonstrates OOP principles: Encapsulation, Single Responsibility
+ */
 public class TaskManager {
-    // Private attributes (Encapsulation)
     private List<Task> tasks;
     private int nextId;
     private FileHandler fileHandler;
     private static final String TASKS_FILE = "data/tasks.txt";
 
-    // Singleton Pattern (Optional - if you want only one TaskManager instance)
-    private static TaskManager instance;
-
-    // Constructor
     public TaskManager() {
         this.tasks = new ArrayList<>();
         this.fileHandler = new FileHandler();
@@ -23,21 +22,21 @@ public class TaskManager {
         loadTasks();
     }
 
-    // Singleton getInstance method (Optional)
-    public static TaskManager getInstance() {
-        if (instance == null) {
-            instance = new TaskManager();
-        }
-        return instance;
-    }
-
-    // Task CRUD Operations
-
     /**
-     * Add a new task (Create)
+     * Add a new task
      */
     public Task addTask(String title, String description, String category,
                         Task.Priority priority, LocalDateTime dueDate, String studentEmail) {
+        if (title == null || title.trim().isEmpty()) {
+            throw new IllegalArgumentException("Task title cannot be empty");
+        }
+        if (studentEmail == null || studentEmail.trim().isEmpty()) {
+            throw new IllegalArgumentException("Student email cannot be empty");
+        }
+        if (dueDate == null) {
+            throw new IllegalArgumentException("Due date cannot be null");
+        }
+
         Task task = new Task(nextId++, title, description, category, priority, dueDate, studentEmail);
         tasks.add(task);
         saveTasks();
@@ -45,7 +44,7 @@ public class TaskManager {
     }
 
     /**
-     * Get task by ID (Read)
+     * Get task by ID
      */
     public Task getTaskById(int id) {
         return tasks.stream()
@@ -58,23 +57,35 @@ public class TaskManager {
      * Get all tasks for a specific student
      */
     public List<Task> getTasksByStudent(String studentEmail) {
+        if (studentEmail == null) return Collections.emptyList();
+
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Update an existing task (Update)
+     * Update an existing task
      */
     public boolean updateTask(int id, String title, String description, String category,
                               Task.Priority priority, LocalDateTime dueDate) {
         Task task = getTaskById(id);
         if (task != null) {
-            task.setTitle(title);
-            task.setDescription(description);
-            task.setCategory(category);
-            task.setPriority(priority);
-            task.setDueDate(dueDate);
+            if (title != null && !title.trim().isEmpty()) {
+                task.setTitle(title);
+            }
+            if (description != null) {
+                task.setDescription(description);
+            }
+            if (category != null) {
+                task.setCategory(category);
+            }
+            if (priority != null) {
+                task.setPriority(priority);
+            }
+            if (dueDate != null) {
+                task.setDueDate(dueDate);
+            }
             saveTasks();
             return true;
         }
@@ -82,7 +93,7 @@ public class TaskManager {
     }
 
     /**
-     * Delete a task (Delete)
+     * Delete a task
      */
     public boolean deleteTask(int id) {
         Task task = getTaskById(id);
@@ -120,101 +131,135 @@ public class TaskManager {
         return false;
     }
 
-    // Filtering and Searching Methods
+    /**
+     * Toggle task completion status
+     */
+    public boolean toggleTaskCompletion(int id) {
+        Task task = getTaskById(id);
+        if (task != null) {
+            task.setCompleted(!task.isCompleted());
+            saveTasks();
+            return true;
+        }
+        return false;
+    }
+
+    // Filtering Methods
 
     /**
-     * Get tasks by category for a specific student
+     * Get tasks by category
      */
     public List<Task> getTasksByCategory(String studentEmail, String category) {
+        if (studentEmail == null || category == null) return Collections.emptyList();
+
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
                 .filter(task -> task.getCategory().equalsIgnoreCase(category))
                 .collect(Collectors.toList());
     }
 
     /**
-     * Get tasks by priority for a specific student
+     * Get tasks by priority
      */
     public List<Task> getTasksByPriority(String studentEmail, Task.Priority priority) {
+        if (studentEmail == null || priority == null) return Collections.emptyList();
+
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
                 .filter(task -> task.getPriority() == priority)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Get completed tasks for a specific student
+     * Get completed tasks
      */
     public List<Task> getCompletedTasks(String studentEmail) {
+        if (studentEmail == null) return Collections.emptyList();
+
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
                 .filter(Task::isCompleted)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Get pending tasks for a specific student
+     * Get pending tasks
      */
     public List<Task> getPendingTasks(String studentEmail) {
+        if (studentEmail == null) return Collections.emptyList();
+
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
                 .filter(task -> !task.isCompleted())
                 .collect(Collectors.toList());
     }
 
     /**
-     * Get overdue tasks for a specific student
+     * Get overdue tasks
      */
     public List<Task> getOverdueTasks(String studentEmail) {
+        if (studentEmail == null) return Collections.emptyList();
+
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
                 .filter(Task::isOverdue)
                 .collect(Collectors.toList());
     }
 
     /**
-     * Get tasks due today for a specific student
+     * Get tasks due today
      */
     public List<Task> getTasksDueToday(String studentEmail) {
+        if (studentEmail == null) return Collections.emptyList();
+
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
                 .filter(Task::isDueToday)
                 .filter(task -> !task.isCompleted())
                 .collect(Collectors.toList());
     }
 
     /**
-     * Search tasks by title for a specific student
+     * Search tasks by title
      */
     public List<Task> searchTasksByTitle(String studentEmail, String searchTerm) {
+        if (studentEmail == null || searchTerm == null) return Collections.emptyList();
+
+        String lowerSearchTerm = searchTerm.toLowerCase();
         return tasks.stream()
-                .filter(task -> task.getStudentEmail().equals(studentEmail))
-                .filter(task -> task.getTitle().toLowerCase().contains(searchTerm.toLowerCase()))
+                .filter(task -> task.getStudentEmail().equalsIgnoreCase(studentEmail))
+                .filter(task -> task.getTitle().toLowerCase().contains(lowerSearchTerm))
                 .collect(Collectors.toList());
     }
 
-    // Statistics Methods
-
     /**
-     * Get task statistics for a student
+     * Get task statistics
      */
     public TaskStats getTaskStats(String studentEmail) {
+        if (studentEmail == null) {
+            return new TaskStats(0, 0, 0, 0, 0);
+        }
+
         List<Task> studentTasks = getTasksByStudent(studentEmail);
 
         int total = studentTasks.size();
         int completed = (int) studentTasks.stream().filter(Task::isCompleted).count();
         int pending = total - completed;
         int overdue = (int) studentTasks.stream().filter(Task::isOverdue).count();
-        int dueToday = (int) studentTasks.stream().filter(Task::isDueToday).count();
+        int dueToday = (int) studentTasks.stream()
+                .filter(Task::isDueToday)
+                .filter(task -> !task.isCompleted())
+                .count();
 
         return new TaskStats(total, completed, pending, overdue, dueToday);
     }
 
     /**
-     * Get tasks sorted by due date for a student
+     * Get tasks sorted by due date
      */
     public List<Task> getTasksSortedByDueDate(String studentEmail, boolean ascending) {
         List<Task> studentTasks = getTasksByStudent(studentEmail);
+
         if (ascending) {
             return studentTasks.stream()
                     .sorted(Comparator.comparing(Task::getDueDate))
@@ -227,19 +272,19 @@ public class TaskManager {
     }
 
     /**
-     * Get tasks sorted by priority for a student
+     * Get tasks sorted by priority
      */
     public List<Task> getTasksSortedByPriority(String studentEmail) {
+        Map<Task.Priority, Integer> priorityOrder = Map.of(
+                Task.Priority.HIGH, 3,
+                Task.Priority.MEDIUM, 2,
+                Task.Priority.LOW, 1
+        );
+
         return getTasksByStudent(studentEmail).stream()
-                .sorted((t1, t2) -> {
-                    // High priority first, then Medium, then Low
-                    Map<Task.Priority, Integer> priorityOrder = Map.of(
-                            Task.Priority.HIGH, 3,
-                            Task.Priority.MEDIUM, 2,
-                            Task.Priority.LOW, 1
-                    );
-                    return priorityOrder.get(t2.getPriority()).compareTo(priorityOrder.get(t1.getPriority()));
-                })
+                .sorted((t1, t2) ->
+                        priorityOrder.get(t2.getPriority()).compareTo(priorityOrder.get(t1.getPriority()))
+                )
                 .collect(Collectors.toList());
     }
 
@@ -260,22 +305,25 @@ public class TaskManager {
                     }
                 }
             }
+            System.out.println("Loaded " + tasks.size() + " tasks.");
         } catch (Exception e) {
-            System.out.println("Could not load tasks: " + e.getMessage());
+            System.out.println("Starting with empty task database.");
         }
     }
 
     /**
      * Save tasks to file
      */
-    private void saveTasks() {
+    private boolean saveTasks() {
         try {
             List<String> lines = tasks.stream()
                     .map(this::taskToString)
                     .collect(Collectors.toList());
             fileHandler.writeFile(TASKS_FILE, lines);
+            return true;
         } catch (Exception e) {
-            System.out.println("Could not save tasks: " + e.getMessage());
+            System.err.println("Error saving tasks: " + e.getMessage());
+            return false;
         }
     }
 
@@ -285,15 +333,15 @@ public class TaskManager {
     private String taskToString(Task task) {
         return String.join("|",
                 String.valueOf(task.getId()),
-                task.getTitle(),
-                task.getDescription(),
-                task.getCategory(),
+                task.getTitle() != null ? task.getTitle() : "",
+                task.getDescription() != null ? task.getDescription() : "",
+                task.getCategory() != null ? task.getCategory() : "",
                 task.getPriority().getValue(),
                 task.getDueDate().toString(),
                 String.valueOf(task.isCompleted()),
                 task.getCreatedAt().toString(),
                 task.getCompletedAt() != null ? task.getCompletedAt().toString() : "null",
-                task.getStudentEmail()
+                task.getStudentEmail() != null ? task.getStudentEmail() : ""
         );
     }
 
@@ -320,12 +368,14 @@ public class TaskManager {
                 return task;
             }
         } catch (Exception e) {
-            System.out.println("Error parsing task: " + line + " - " + e.getMessage());
+            System.err.println("Error parsing task: " + e.getMessage());
         }
         return null;
     }
 
-    // Inner class for task statistics
+    /**
+     * Inner class for task statistics
+     */
     public static class TaskStats {
         private final int total;
         private final int completed;
@@ -341,7 +391,6 @@ public class TaskManager {
             this.dueToday = dueToday;
         }
 
-        // Getters
         public int getTotal() { return total; }
         public int getCompleted() { return completed; }
         public int getPending() { return pending; }

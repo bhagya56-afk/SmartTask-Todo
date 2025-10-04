@@ -12,12 +12,10 @@ import java.util.List;
  * Demonstrates OOP principles: Encapsulation, Single Responsibility
  */
 public class AuthManager {
-    // Private attributes (Encapsulation)
     private List<Student> students;
     private FileHandler fileHandler;
     private static final String STUDENTS_FILE = "data/students.txt";
 
-    // Constructor
     public AuthManager() {
         this.students = new ArrayList<>();
         this.fileHandler = new FileHandler();
@@ -26,16 +24,19 @@ public class AuthManager {
 
     /**
      * Register a new student
-     * @param firstName Student's first name
-     * @param lastName Student's last name
-     * @param email Student's email (unique identifier)
-     * @param studentId Student's ID
-     * @param major Student's major
-     * @param password Plain text password (will be hashed)
-     * @return true if registration successful, false if email already exists
      */
     public boolean register(String firstName, String lastName, String email,
                             String studentId, String major, String password) {
+        // Validate inputs
+        if (!isValidEmail(email) || !isValidPassword(password)) {
+            return false;
+        }
+
+        if (firstName == null || firstName.trim().isEmpty() ||
+                lastName == null || lastName.trim().isEmpty()) {
+            return false;
+        }
+
         // Check if email already exists
         if (findStudentByEmail(email) != null) {
             return false;
@@ -49,25 +50,24 @@ public class AuthManager {
         students.add(student);
 
         // Save to file
-        saveStudents();
-
-        return true;
+        return saveStudents();
     }
 
     /**
      * Login a student
-     * @param email Student's email
-     * @param password Plain text password
-     * @return Student object if login successful, null otherwise
      */
     public Student login(String email, String password) {
+        if (email == null || password == null) {
+            return null;
+        }
+
         Student student = findStudentByEmail(email);
 
         if (student != null && student.isActive()) {
             String hashedPassword = hashPassword(password);
             if (hashedPassword.equals(student.getHashedPassword())) {
                 student.updateLastLogin();
-                saveStudents(); // Save updated login time
+                saveStudents();
                 return student;
             }
         }
@@ -77,12 +77,12 @@ public class AuthManager {
 
     /**
      * Change student password
-     * @param email Student's email
-     * @param oldPassword Current password
-     * @param newPassword New password
-     * @return true if password changed successfully
      */
     public boolean changePassword(String email, String oldPassword, String newPassword) {
+        if (!isValidPassword(newPassword)) {
+            return false;
+        }
+
         Student student = findStudentByEmail(email);
 
         if (student != null) {
@@ -90,8 +90,7 @@ public class AuthManager {
             if (hashedOldPassword.equals(student.getHashedPassword())) {
                 String hashedNewPassword = hashPassword(newPassword);
                 student.setHashedPassword(hashedNewPassword);
-                saveStudents();
-                return true;
+                return saveStudents();
             }
         }
 
@@ -100,21 +99,21 @@ public class AuthManager {
 
     /**
      * Update student profile information
-     * @param email Student's email
-     * @param firstName New first name
-     * @param lastName New last name
-     * @param major New major
-     * @return true if update successful
      */
     public boolean updateProfile(String email, String firstName, String lastName, String major) {
         Student student = findStudentByEmail(email);
 
         if (student != null) {
-            student.setFirstName(firstName);
-            student.setLastName(lastName);
-            student.setMajor(major);
-            saveStudents();
-            return true;
+            if (firstName != null && !firstName.trim().isEmpty()) {
+                student.setFirstName(firstName.trim());
+            }
+            if (lastName != null && !lastName.trim().isEmpty()) {
+                student.setLastName(lastName.trim());
+            }
+            if (major != null && !major.trim().isEmpty()) {
+                student.setMajor(major.trim());
+            }
+            return saveStudents();
         }
 
         return false;
@@ -122,16 +121,13 @@ public class AuthManager {
 
     /**
      * Deactivate student account
-     * @param email Student's email
-     * @return true if deactivated successfully
      */
     public boolean deactivateAccount(String email) {
         Student student = findStudentByEmail(email);
 
         if (student != null) {
             student.deactivate();
-            saveStudents();
-            return true;
+            return saveStudents();
         }
 
         return false;
@@ -139,16 +135,13 @@ public class AuthManager {
 
     /**
      * Get all students (for admin purposes)
-     * @return List of all students
      */
     public List<Student> getAllStudents() {
-        return new ArrayList<>(students); // Return copy for security
+        return new ArrayList<>(students);
     }
 
     /**
      * Get student by email
-     * @param email Student's email
-     * @return Student object or null if not found
      */
     public Student getStudentByEmail(String email) {
         return findStudentByEmail(email);
@@ -156,21 +149,17 @@ public class AuthManager {
 
     /**
      * Check if email exists
-     * @param email Email to check
-     * @return true if email exists
      */
     public boolean emailExists(String email) {
         return findStudentByEmail(email) != null;
     }
 
-    // Private helper methods
-
     /**
      * Find student by email (internal method)
-     * @param email Email to search for
-     * @return Student object or null if not found
      */
     private Student findStudentByEmail(String email) {
+        if (email == null) return null;
+
         return students.stream()
                 .filter(student -> student.getEmail().equalsIgnoreCase(email))
                 .findFirst()
@@ -179,8 +168,6 @@ public class AuthManager {
 
     /**
      * Hash password using SHA-256
-     * @param password Plain text password
-     * @return Hashed password
      */
     private String hashPassword(String password) {
         try {
@@ -214,9 +201,8 @@ public class AuthManager {
                     students.add(student);
                 }
             }
-            System.out.println("Loaded " + students.size() + " students from file.");
+            System.out.println("Loaded " + students.size() + " students.");
         } catch (Exception e) {
-            System.out.println("Could not load students: " + e.getMessage());
             System.out.println("Starting with empty student database.");
         }
     }
@@ -224,31 +210,32 @@ public class AuthManager {
     /**
      * Save students to file
      */
-    private void saveStudents() {
+    private boolean saveStudents() {
         try {
             List<String> lines = new ArrayList<>();
             for (Student student : students) {
                 lines.add(student.toFileString());
             }
             fileHandler.writeFile(STUDENTS_FILE, lines);
+            return true;
         } catch (Exception e) {
-            System.out.println("Error saving students: " + e.getMessage());
+            System.err.println("Error saving students: " + e.getMessage());
+            return false;
         }
     }
 
     /**
-     * Validate email format (basic validation)
-     * @param email Email to validate
-     * @return true if email format is valid
+     * Validate email format
      */
     public static boolean isValidEmail(String email) {
-        return email != null && email.contains("@") && email.contains(".") && email.length() > 5;
+        if (email == null || email.trim().isEmpty()) {
+            return false;
+        }
+        return email.contains("@") && email.contains(".") && email.length() > 5;
     }
 
     /**
      * Validate password strength
-     * @param password Password to validate
-     * @return true if password meets requirements
      */
     public static boolean isValidPassword(String password) {
         return password != null && password.length() >= 6;
@@ -256,7 +243,6 @@ public class AuthManager {
 
     /**
      * Get user statistics
-     * @return String with user statistics
      */
     public String getUserStats() {
         long totalUsers = students.size();

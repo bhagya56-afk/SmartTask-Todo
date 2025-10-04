@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Manage your SmartTask student profile">
     <title>Profile - SmartTask</title>
     <link rel="stylesheet" href="profile-style.css">
 </head>
@@ -36,16 +37,16 @@
         </div>
 
         <nav class="profile-nav">
-            <a href="#personal-info" class="nav-item active" onclick="showSection('personal-info')">
+            <a href="#personal-info" class="nav-item active" data-section="personal-info">
                 👤 Personal Information
             </a>
-            <a href="#academic-info" class="nav-item" onclick="showSection('academic-info')">
+            <a href="#academic-info" class="nav-item" data-section="academic-info">
                 📚 Academic Details
             </a>
-            <a href="#task-stats" class="nav-item" onclick="showSection('task-stats')">
+            <a href="#task-stats" class="nav-item" data-section="task-stats">
                 📊 Task Statistics
             </a>
-            <a href="#security" class="nav-item" onclick="showSection('security')">
+            <a href="#security" class="nav-item" data-section="security">
                 🔒 Security Settings
             </a>
         </nav>
@@ -57,7 +58,7 @@
         <section id="personal-info" class="profile-section active">
             <div class="section-header">
                 <h2>Personal Information</h2>
-                <button class="edit-btn" onclick="toggleEdit('personal')">Edit</button>
+                <button class="edit-btn" data-form="personal">Edit</button>
             </div>
 
             <form class="profile-form" id="personalForm">
@@ -89,8 +90,8 @@
                 </div>
 
                 <div class="form-actions hidden" id="personalActions">
-                    <button type="button" onclick="savePersonalInfo()" class="save-btn">Save Changes</button>
-                    <button type="button" onclick="cancelEdit('personal')" class="cancel-btn">Cancel</button>
+                    <button type="button" class="save-btn" data-form="personal">Save Changes</button>
+                    <button type="button" class="cancel-btn" data-form="personal">Cancel</button>
                 </div>
             </form>
         </section>
@@ -99,7 +100,7 @@
         <section id="academic-info" class="profile-section">
             <div class="section-header">
                 <h2>Academic Details</h2>
-                <button class="edit-btn" onclick="toggleEdit('academic')">Edit</button>
+                <button class="edit-btn" data-form="academic">Edit</button>
             </div>
 
             <form class="profile-form" id="academicForm">
@@ -147,13 +148,13 @@
                 </div>
 
                 <div class="form-actions hidden" id="academicActions">
-                    <button type="button" onclick="saveAcademicInfo()" class="save-btn">Save Changes</button>
-                    <button type="button" onclick="cancelEdit('academic')" class="cancel-btn">Cancel</button>
+                    <button type="button" class="save-btn" data-form="academic">Save Changes</button>
+                    <button type="button" class="cancel-btn" data-form="academic">Cancel</button>
                 </div>
             </form>
         </section>
 
-        <!-- Task Statistics Section with Real-Time Data -->
+        <!-- Task Statistics Section -->
         <section id="task-stats" class="profile-section">
             <div class="section-header">
                 <h2>Task Statistics</h2>
@@ -197,7 +198,7 @@
                 <div class="security-item">
                     <h3>Change Password</h3>
                     <p>Keep your account secure with a strong password</p>
-                    <button class="security-btn" onclick="showChangePassword()">Change Password</button>
+                    <button class="security-btn" id="changePasswordBtn">Change Password</button>
                 </div>
 
                 <div class="security-item">
@@ -218,9 +219,9 @@
                 <div class="modal-content">
                     <div class="modal-header">
                         <h3>Change Password</h3>
-                        <button class="modal-close" onclick="hideChangePassword()">&times;</button>
+                        <button class="modal-close" id="closePasswordModal">&times;</button>
                     </div>
-                    <form class="password-form" onsubmit="changePassword(event)">
+                    <form class="password-form" id="passwordForm">
                         <div class="form-group">
                             <label>Current Password</label>
                             <input type="password" id="currentPassword" required>
@@ -234,7 +235,7 @@
                             <input type="password" id="confirmPassword" required>
                         </div>
                         <div class="modal-actions">
-                            <button type="button" onclick="hideChangePassword()" class="cancel-btn">Cancel</button>
+                            <button type="button" class="cancel-btn" id="cancelPasswordBtn">Cancel</button>
                             <button type="submit" class="save-btn">Update Password</button>
                         </div>
                     </form>
@@ -244,269 +245,9 @@
     </main>
 </div>
 
-<script>
-    // API Configuration
-    const API_BASE_URL = 'http://localhost:8080/api';
-
-    // Initialize profile on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        loadProfileData();
-        loadTaskStatistics();
-    });
-
-    // Get current user from localStorage
-    function getCurrentUser() {
-        return JSON.parse(localStorage.getItem('currentUser') || '{}');
-    }
-
-    // Load profile data
-    function loadProfileData() {
-        const user = getCurrentUser();
-
-        if (!user.email) {
-            alert('Please login first');
-            window.location.href = 'login.html';
-            return;
-        }
-
-        const firstName = user.firstName || '';
-        const lastName = user.lastName || '';
-        const email = user.email;
-
-        // Update profile fields
-        document.getElementById('studentEmail').textContent = email;
-        document.getElementById('email').value = email;
-        document.getElementById('firstName').value = firstName;
-        document.getElementById('lastName').value = lastName;
-
-        // Update display name
-        const fullName = `${firstName} ${lastName}`.trim() || 'User';
-        document.getElementById('studentName').textContent = fullName;
-
-        // Generate initials
-        let initials = '';
-        if (firstName) initials += firstName.charAt(0).toUpperCase();
-        if (lastName) initials += lastName.charAt(0).toUpperCase();
-        if (!initials) initials = email.charAt(0).toUpperCase();
-
-        document.getElementById('profileInitials').textContent = initials;
-        document.getElementById('sidebarInitials').textContent = initials;
-
-        // Load other fields if available
-        if (user.studentId) document.getElementById('studentIdDisplay').textContent = user.studentId;
-        if (user.studentId) document.getElementById('studentId').value = user.studentId;
-        if (user.major) document.getElementById('major').value = user.major;
-    }
-
-    // Load task statistics from Java backend
-    async function loadTaskStatistics() {
-        const email = getCurrentUser().email;
-        if (!email) return;
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks?email=${encodeURIComponent(email)}`);
-
-            if (!response.ok) {
-                throw new Error('Failed to load tasks');
-            }
-
-            const tasks = await response.json();
-
-            // Calculate statistics
-            const total = tasks.length;
-            const completed = tasks.filter(t => t.completed).length;
-            const pending = total - completed;
-            const rate = total > 0 ? Math.round((completed / total) * 100) : 0;
-
-            // Update stats display
-            document.getElementById('profileStatTotal').textContent = total;
-            document.getElementById('profileStatCompleted').textContent = completed;
-            document.getElementById('profileStatPending').textContent = pending;
-            document.getElementById('profileStatRate').textContent = rate + '%';
-
-            // Count by category
-            const categories = {};
-            tasks.forEach(task => {
-                const cat = task.category || 'Other';
-                categories[cat] = (categories[cat] || 0) + 1;
-            });
-
-            // Display categories
-            const categoryList = document.getElementById('categoriesList');
-            if (Object.keys(categories).length === 0) {
-                categoryList.innerHTML = '<p style="text-align: center; color: #64748b;">No tasks yet. Add some tasks to see categories!</p>';
-            } else {
-                categoryList.innerHTML = Object.entries(categories)
-                    .sort((a, b) => b[1] - a[1])
-                    .map(([cat, count]) => {
-                        const percent = Math.round((count / total) * 100);
-                        const emoji = getEmojiForCategory(cat);
-                        return `
-                        <div class="category-item">
-                            <span class="category-name">${emoji} ${cat}</span>
-                            <div class="category-bar">
-                                <div class="category-progress" style="width: ${percent}%"></div>
-                            </div>
-                            <span class="category-count">${count}</span>
-                        </div>
-                    `;
-                    }).join('');
-            }
-        } catch (error) {
-            console.error('Error loading task statistics:', error);
-            document.getElementById('categoriesList').innerHTML =
-                '<p style="text-align: center; color: #ef4444;">Error loading data. Make sure WebAPIBridge is running.</p>';
-        }
-    }
-
-    // Get emoji for category
-    function getEmojiForCategory(category) {
-        const emojis = {
-            'study/Academics': '📚',
-            'personal': '👤',
-            'lab/Practical work': '🧪',
-            'Projects': '🗃️',
-            'Exams': '📃',
-            'Events': '🔖',
-            'Other': '📝'
-        };
-        return emojis[category] || '📝';
-    }
-
-    // Section navigation
-    function showSection(sectionId) {
-        document.querySelectorAll('.profile-section').forEach(section => {
-            section.classList.remove('active');
-        });
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        document.getElementById(sectionId).classList.add('active');
-        event.target.classList.add('active');
-
-        // Reload stats when switching to task-stats section
-        if (sectionId === 'task-stats') {
-            loadTaskStatistics();
-        }
-    }
-
-    // Toggle edit mode
-    function toggleEdit(formType) {
-        const form = document.getElementById(formType + 'Form');
-        const inputs = form.querySelectorAll('input, select, textarea');
-        const actions = document.getElementById(formType + 'Actions');
-        const editBtn = event.target;
-
-        if (editBtn.textContent === 'Edit') {
-            inputs.forEach(input => {
-                if (input.id !== 'email') { // Keep email readonly
-                    input.readOnly = false;
-                    input.disabled = false;
-                }
-            });
-            actions.classList.remove('hidden');
-            editBtn.textContent = 'Cancel';
-            editBtn.classList.add('cancel-mode');
-        } else {
-            cancelEdit(formType);
-        }
-    }
-
-    // Cancel edit
-    function cancelEdit(formType) {
-        const form = document.getElementById(formType + 'Form');
-        const inputs = form.querySelectorAll('input, select, textarea');
-        const actions = document.getElementById(formType + 'Actions');
-        const editBtn = form.previousElementSibling.querySelector('.edit-btn');
-
-        inputs.forEach(input => {
-            input.readOnly = true;
-            input.disabled = true;
-        });
-        actions.classList.add('hidden');
-        editBtn.textContent = 'Edit';
-        editBtn.classList.remove('cancel-mode');
-
-        // Reload original data
-        loadProfileData();
-    }
-
-    // Save personal info
-    function savePersonalInfo() {
-        const firstName = document.getElementById('firstName').value.trim();
-        const lastName = document.getElementById('lastName').value.trim();
-        const phone = document.getElementById('phone').value.trim();
-        const bio = document.getElementById('bio').value.trim();
-
-        // Update localStorage
-        const currentUser = getCurrentUser();
-        currentUser.firstName = firstName;
-        currentUser.lastName = lastName;
-        currentUser.phone = phone;
-        currentUser.bio = bio;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-
-        loadProfileData();
-        cancelEdit('personal');
-    }
-
-    // Save academic info
-    function saveAcademicInfo() {
-        const studentId = document.getElementById('studentId').value.trim();
-        const major = document.getElementById('major').value;
-        const yearOfStudy = document.getElementById('yearOfStudy').value;
-        const gpa = document.getElementById('gpa').value;
-        const institution = document.getElementById('institution').value.trim();
-
-        // Update localStorage
-        const currentUser = getCurrentUser();
-        currentUser.studentId = studentId;
-        currentUser.major = major;
-        currentUser.yearOfStudy = yearOfStudy;
-        currentUser.gpa = gpa;
-        currentUser.institution = institution;
-        localStorage.setItem('currentUser', JSON.stringify(currentUser));
-
-
-        loadProfileData();
-        cancelEdit('academic');
-    }
-
-    // Change password modal
-    function showChangePassword() {
-        document.getElementById('changePasswordModal').style.display = 'flex';
-    }
-
-    function hideChangePassword() {
-        document.getElementById('changePasswordModal').style.display = 'none';
-        document.querySelector('.password-form').reset();
-    }
-
-    // Change password
-    function changePassword(event) {
-        event.preventDefault();
-
-        const currentPassword = document.getElementById('currentPassword').value;
-        const newPassword = document.getElementById('newPassword').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-
-        if (newPassword !== confirmPassword) {
-            alert('New passwords do not match!');
-            return;
-        }
-
-        if (newPassword.length < 6) {
-            alert('Password must be at least 6 characters long!');
-            return;
-        }
-
-        // In a real app, this would call the backend API
-        alert('Password changed successfully! (Note: This is a demo - actual password change not implemented)');
-        hideChangePassword();
-    }
-</script>
+<!-- External Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="auth-config.js"></script>
+<script src="profile-script.js"></script>
 </body>
 </html>

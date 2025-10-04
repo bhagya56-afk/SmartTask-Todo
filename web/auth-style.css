@@ -1,4 +1,6 @@
-/* Reset and Base Styles */
+/* ===========================
+   Reset and Base Styles
+   =========================== */
 * {
     margin: 0;
     padding: 0;
@@ -15,7 +17,9 @@ body {
     padding: 2rem;
 }
 
-/* Auth Container */
+/* ===========================
+   Auth Container
+   =========================== */
 .auth-container {
     display: grid;
     grid-template-columns: 1fr 1fr;
@@ -25,7 +29,6 @@ body {
     align-items: center;
 }
 
-/* Auth Card */
 .auth-card {
     background: rgba(255, 255, 255, 0.95);
     backdrop-filter: blur(20px);
@@ -52,7 +55,9 @@ body {
     color: #64748b;
 }
 
-/* Form Styles */
+/* ===========================
+   Form Styles
+   =========================== */
 .auth-form {
     display: flex;
     flex-direction: column;
@@ -98,7 +103,9 @@ body {
     color: #9ca3af;
 }
 
-/* Form Options */
+/* ===========================
+   Form Options
+   =========================== */
 .form-options {
     display: flex;
     justify-content: space-between;
@@ -106,7 +113,6 @@ body {
     font-size: 0.9rem;
 }
 
-.remember-me,
 .checkbox-label {
     display: flex;
     align-items: center;
@@ -115,25 +121,15 @@ body {
     cursor: pointer;
 }
 
-.remember-me input,
 .checkbox-label input {
     margin: 0;
-    padding: 0;
     width: auto;
     height: auto;
 }
 
-.forgot-password {
-    color: #7c3aed;
-    text-decoration: none;
-    font-weight: 500;
-}
-
-.forgot-password:hover {
-    text-decoration: underline;
-}
-
-/* Buttons */
+/* ===========================
+   Buttons
+   =========================== */
 .auth-btn {
     padding: 1rem 2rem;
     border: none;
@@ -169,7 +165,9 @@ body {
     border-color: #7c3aed;
 }
 
-/* Auth Divider */
+/* ===========================
+   Auth Divider
+   =========================== */
 .auth-divider {
     text-align: center;
     margin: 1rem 0;
@@ -177,7 +175,9 @@ body {
     font-size: 0.9rem;
 }
 
-/* Back to Home */
+/* ===========================
+   Back to Home
+   =========================== */
 .back-to-home {
     text-align: center;
     margin-top: 2rem;
@@ -196,7 +196,9 @@ body {
     color: #7c3aed;
 }
 
-/* Auth Illustration */
+/* ===========================
+   Auth Illustration
+   =========================== */
 .auth-illustration {
     display: flex;
     align-items: center;
@@ -205,7 +207,7 @@ body {
     height: 400px;
 }
 
-/* Student Figure for Login */
+/* Login Illustration */
 .student-figure {
     position: relative;
     width: 300px;
@@ -277,7 +279,7 @@ body {
     line-height: 1.8;
 }
 
-/* Signup Figure */
+/* Signup Illustration */
 .signup-figure {
     position: relative;
     width: 300px;
@@ -360,7 +362,9 @@ body {
     font-size: 2rem;
 }
 
-/* Responsive Design */
+/* ===========================
+   Responsive Design
+   =========================== */
 @media (max-width: 768px) {
     .auth-container {
         grid-template-columns: 1fr;

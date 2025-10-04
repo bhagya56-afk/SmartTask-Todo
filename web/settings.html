@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Configure your SmartTask settings and preferences">
     <title>Settings - SmartTask</title>
     <link rel="stylesheet" href="settings-style.css">
 </head>
@@ -29,12 +30,12 @@
         <nav class="settings-nav">
             <h3>Settings</h3>
             <ul>
-                <li><a href="#general" class="nav-item active" onclick="showSettingsSection('general')">⚙️ General</a></li>
-                <li><a href="#notifications" class="nav-item" onclick="showSettingsSection('notifications')">🔔 Notifications</a></li>
-                <li><a href="#appearance" class="nav-item" onclick="showSettingsSection('appearance')">🎨 Appearance</a></li>
-                <li><a href="#privacy" class="nav-item" onclick="showSettingsSection('privacy')">🔐 Privacy</a></li>
-                <li><a href="#data" class="nav-item" onclick="showSettingsSection('data')">💾 Data & Storage</a></li>
-                <li><a href="#about" class="nav-item" onclick="showSettingsSection('about')">ℹ️ About</a></li>
+                <li><a href="#general" class="nav-item active" data-section="general">⚙️ General</a></li>
+                <li><a href="#notifications" class="nav-item" data-section="notifications">🔔 Notifications</a></li>
+                <li><a href="#appearance" class="nav-item" data-section="appearance">🎨 Appearance</a></li>
+                <li><a href="#privacy" class="nav-item" data-section="privacy">🔐 Privacy</a></li>
+                <li><a href="#data" class="nav-item" data-section="data">💾 Data & Storage</a></li>
+                <li><a href="#about" class="nav-item" data-section="about">ℹ️ About</a></li>
             </ul>
         </nav>
     </aside>
@@ -390,7 +391,7 @@
                         <label>Export Data</label>
                         <p>Download a copy of all your data</p>
                     </div>
-                    <button class="action-btn" onclick="exportData()">Export</button>
+                    <button class="action-btn" id="exportDataBtn">Export</button>
                 </div>
 
                 <div class="action-item">
@@ -398,7 +399,7 @@
                         <label>Create Backup</label>
                         <p>Create a backup of your tasks and settings</p>
                     </div>
-                    <button class="action-btn" onclick="createBackup()">Backup</button>
+                    <button class="action-btn" id="createBackupBtn">Backup</button>
                 </div>
             </div>
 
@@ -409,7 +410,7 @@
                         <label>Clear All Data</label>
                         <p>Permanently delete all your tasks and data</p>
                     </div>
-                    <button class="action-btn danger" onclick="clearAllData()">Clear Data</button>
+                    <button class="action-btn danger" id="clearDataBtn">Clear Data</button>
                 </div>
 
                 <div class="action-item">
@@ -417,7 +418,7 @@
                         <label>Delete Account</label>
                         <p>Permanently delete your account and all associated data</p>
                     </div>
-                    <button class="action-btn danger" onclick="deleteAccount()">Delete Account</button>
+                    <button class="action-btn danger" id="deleteAccountBtn">Delete Account</button>
                 </div>
             </div>
         </section>
@@ -452,7 +453,7 @@
                         <label>Help Center</label>
                         <p>Get help and find answers to common questions</p>
                     </div>
-                    <button class="action-btn" onclick="openHelp()">Open Help</button>
+                    <button class="action-btn" id="helpBtn">Open Help</button>
                 </div>
 
                 <div class="action-item">
@@ -460,7 +461,7 @@
                         <label>Report a Bug</label>
                         <p>Let us know if you've found an issue</p>
                     </div>
-                    <button class="action-btn" onclick="reportBug()">Report Bug</button>
+                    <button class="action-btn" id="bugBtn">Report Bug</button>
                 </div>
 
                 <div class="action-item">
@@ -468,7 +469,7 @@
                         <label>Contact Support</label>
                         <p>Get in touch with our support team</p>
                     </div>
-                    <button class="action-btn" onclick="contactSupport()">Contact Us</button>
+                    <button class="action-btn" id="supportBtn">Contact Us</button>
                 </div>
             </div>
 
@@ -479,7 +480,7 @@
                         <label>Privacy Policy</label>
                         <p>Read our privacy policy</p>
                     </div>
-                    <button class="action-btn secondary" onclick="openPrivacyPolicy()">View Policy</button>
+                    <button class="action-btn secondary" id="privacyBtn">View Policy</button>
                 </div>
 
                 <div class="action-item">
@@ -487,92 +488,16 @@
                         <label>Terms of Service</label>
                         <p>Read our terms of service</p>
                     </div>
-                    <button class="action-btn secondary" onclick="openTerms()">View Terms</button>
+                    <button class="action-btn secondary" id="termsBtn">View Terms</button>
                 </div>
             </div>
         </section>
     </main>
 </div>
 
-<script>
-    // Initialize settings
-    document.addEventListener('DOMContentLoaded', function() {
-        loadUserInfo();
-    });
-
-    function loadUserInfo() {
-        const currentUser = JSON.parse(localStorage.getItem('currentUser') || '{}');
-        if (currentUser.email) {
-            const name = currentUser.name || currentUser.email.split('@')[0];
-            const initials = name.substring(0, 2).toUpperCase();
-            document.getElementById('profileInitials').textContent = initials;
-        }
-    }
-
-    function showSettingsSection(sectionId) {
-        // Hide all sections
-        document.querySelectorAll('.settings-section').forEach(section => {
-            section.classList.remove('active');
-        });
-
-        // Remove active class from all nav items
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.classList.remove('active');
-        });
-
-        // Show selected section
-        document.getElementById(sectionId).classList.add('active');
-
-        // Add active class to clicked nav item
-        event.target.classList.add('active');
-    }
-
-    // Action functions
-    function exportData() {
-        alert('Data export feature coming soon!');
-    }
-
-    function createBackup() {
-        alert('Backup created successfully!');
-    }
-
-    function clearAllData() {
-        if (confirm('Are you sure you want to clear all your data? This action cannot be undone.')) {
-            localStorage.clear();
-            alert('All data has been cleared.');
-            window.location.href = 'login.html';
-        }
-    }
-
-    function deleteAccount() {
-        if (confirm('Are you sure you want to delete your account? This action cannot be undone and will permanently delete all your data.')) {
-            if (confirm('This is your final warning. Are you absolutely sure?')) {
-                localStorage.clear();
-                alert('Account deleted successfully.');
-                window.location.href = 'index.html';
-            }
-        }
-    }
-
-    function openHelp() {
-        alert('Help center feature coming soon!');
-    }
-
-    function reportBug() {
-        alert('Bug reporting feature coming soon!');
-    }
-
-    function contactSupport() {
-        alert('Support contact feature coming soon!');
-    }
-
-    function openPrivacyPolicy() {
-        alert('Privacy policy feature coming soon!');
-    }
-
-    function openTerms() {
-        alert('Terms of service feature coming soon!');
-    }
-</script>
+<!-- External Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="auth-config.js"></script>
+<script src="settings-script.js"></script>
 </body>
 </html>

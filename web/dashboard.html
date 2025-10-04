@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="SmartTask student dashboard - manage your tasks efficiently">
     <title>SmartTask - Student Dashboard</title>
     <link rel="stylesheet" href="dashboard-style.css">
 </head>
@@ -21,7 +22,7 @@
                 <div class="dropdown-menu">
                     <a href="profile.html">Profile</a>
                     <a href="settings.html">Settings</a>
-                    <a href="#" onclick="logout()">Logout</a>
+                    <a href="#" id="logoutBtn">Logout</a>
                 </div>
             </div>
         </div>
@@ -66,7 +67,7 @@
         <div id="overview" class="tab-content active">
             <div class="page-header">
                 <h1>Dashboard Overview</h1>
-                <button class="btn btn-primary" onclick="showAddTaskModal()">+ Add New Task</button>
+                <button class="btn btn-primary" id="addTaskBtn">+ Add New Task</button>
             </div>
 
             <!-- Stats Cards -->
@@ -117,13 +118,13 @@
             <div class="page-header">
                 <h1>All Tasks</h1>
                 <div class="header-controls">
-                    <select class="filter-select" onchange="filterTasks(this.value)">
+                    <select class="filter-select" id="priorityFilter">
                         <option value="all">All Priorities</option>
                         <option value="high">High Priority</option>
                         <option value="medium">Medium Priority</option>
                         <option value="low">Low Priority</option>
                     </select>
-                    <button class="btn btn-primary" onclick="showAddTaskModal()">+ Add Task</button>
+                    <button class="btn btn-primary" id="addTaskBtn2">+ Add Task</button>
                 </div>
             </div>
 
@@ -163,9 +164,9 @@
     <div class="modal-content">
         <div class="modal-header">
             <h2>Add New Task</h2>
-            <button class="modal-close" onclick="closeAddTaskModal()">&times;</button>
+            <button class="modal-close" id="closeModalBtn">&times;</button>
         </div>
-        <form class="task-form" onsubmit="addTask(event)">
+        <form class="task-form" id="taskForm">
             <div class="form-group">
                 <label for="taskTitle">Task Title</label>
                 <input type="text" id="taskTitle" name="title" required placeholder="Enter task title">
@@ -213,439 +214,16 @@
             </div>
 
             <div class="modal-actions">
-                <button type="button" class="btn btn-secondary" onclick="closeAddTaskModal()">Cancel</button>
+                <button type="button" class="btn btn-secondary" id="cancelBtn">Cancel</button>
                 <button type="submit" class="btn btn-primary">Add Task</button>
             </div>
         </form>
     </div>
 </div>
 
-<script>
-    // API Configuration
-    const API_BASE_URL = 'http://localhost:8080/api';
-
-    // Task Manager
-    class TaskManager {
-        constructor() {
-            this.tasks = [];
-            this.currentFilter = 'all';
-        }
-    }
-
-    const taskManager = new TaskManager();
-
-    // Get current user
-    function getCurrentUser() {
-        return JSON.parse(localStorage.getItem('currentUser') || '{}');
-    }
-
-    function getCurrentUserEmail() {
-        return getCurrentUser().email || '';
-    }
-
-    // Check authentication
-    function checkAuth() {
-        const currentUser = localStorage.getItem('currentUser');
-        if (!currentUser) {
-            alert('Please login first');
-            window.location.href = 'login.html';
-            return;
-        }
-
-        const user = JSON.parse(currentUser);
-        const userName = user.firstName || user.email.split('@')[0];
-        document.getElementById('userName').textContent = userName;
-
-        // Set avatar initials
-        const initials = user.firstName && user.lastName
-            ? user.firstName[0] + user.lastName[0]
-            : userName[0] + (userName[1] || '');
-        document.getElementById('userAvatar').textContent = initials.toUpperCase();
-    }
-
-    // Load tasks from server
-    async function loadTasksFromServer() {
-        const email = getCurrentUserEmail();
-        if (!email) return;
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks?email=${encodeURIComponent(email)}`);
-
-            if (!response.ok) {
-                throw new Error('Failed to load tasks');
-            }
-
-            const tasks = await response.json();
-            taskManager.tasks = tasks;
-
-            updateStats();
-            renderOverviewTasks();
-            renderAllTasks();
-        } catch (error) {
-            console.error('Error loading tasks:', error);
-            showNotification('Error connecting to server. Make sure WebAPIBridge is running on port 8080.', 'error');
-        }
-    }
-
-    // Update statistics
-    function updateStats() {
-        const today = new Date().toISOString().split('T')[0];
-
-        const stats = {
-            total: taskManager.tasks.length,
-            completed: taskManager.tasks.filter(t => t.completed).length,
-            pending: taskManager.tasks.filter(t => !t.completed).length,
-            dueToday: taskManager.tasks.filter(t => {
-                const taskDate = t.dueDate.split('T')[0];
-                return taskDate === today && !t.completed;
-            }).length
-        };
-
-        document.getElementById('stat-total').textContent = stats.total;
-        document.getElementById('stat-completed').textContent = stats.completed;
-        document.getElementById('stat-pending').textContent = stats.pending;
-        document.getElementById('stat-duetoday').textContent = stats.dueToday;
-    }
-
-    // Create task HTML
-    function createTaskElement(task) {
-        const priorityClass = `${task.priority}-priority`;
-        const priorityEmoji = task.priority === 'high' ? '🔴' : task.priority === 'medium' ? '🟡' : '🟢';
-
-        const categoryEmojis = {
-            'study/Academics': '📚',
-            'personal': '👤',
-            'lab/Practical work': '🧪',
-            'Projects': '🗃️',
-            'Exams': '📃',
-            'Events': '🔖',
-            'Other': '📝'
-        };
-
-        const dueDate = new Date(task.dueDate);
-        const today = new Date();
-        today.setHours(0, 0, 0, 0);
-        const tomorrow = new Date(today);
-        tomorrow.setDate(tomorrow.getDate() + 1);
-
-        let dueDateText = dueDate.toLocaleDateString();
-        if (dueDate.toDateString() === today.toDateString()) {
-            dueDateText = 'Today';
-        } else if (dueDate.toDateString() === tomorrow.toDateString()) {
-            dueDateText = 'Tomorrow';
-        }
-
-        return `
-        <div class="task-item ${priorityClass} ${task.completed ? 'completed' : ''}" data-task-id="${task.id}">
-            <div class="task-checkbox">
-                <input type="checkbox" id="task${task.id}" ${task.completed ? 'checked' : ''} onchange="toggleTask(${task.id})">
-                <label for="task${task.id}"></label>
-            </div>
-            <div class="task-content">
-                <h4${task.completed ? ' class="completed-task"' : ''}>${escapeHtml(task.title)}</h4>
-                <p>Due: ${dueDateText} • Category: ${categoryEmojis[task.category] || '📝'} ${escapeHtml(task.category)} • Priority: ${priorityEmoji} ${task.priority}</p>
-                ${task.description ? `<p class="task-description">${escapeHtml(task.description)}</p>` : ''}
-            </div>
-            <div class="task-actions">
-                <button class="btn-icon delete" onclick="deleteTask(${task.id})" title="Delete Task">🗑️</button>
-            </div>
-        </div>
-    `;
-    }
-
-    // Escape HTML
-    function escapeHtml(text) {
-        const div = document.createElement('div');
-        div.textContent = text;
-        return div.innerHTML;
-    }
-
-    // Render overview tasks
-    function renderOverviewTasks() {
-        const taskList = document.getElementById('recentTasksList');
-        if (!taskList) return;
-
-        const recentTasks = [...taskManager.tasks]
-            .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
-            .slice(0, 5);
-
-        if (recentTasks.length === 0) {
-            taskList.innerHTML = '<div class="no-tasks"><p>No tasks yet. Click "Add New Task" to get started!</p></div>';
-            return;
-        }
-
-        taskList.innerHTML = recentTasks.map(task => createTaskElement(task)).join('');
-    }
-
-    // Render all tasks
-    function renderAllTasks() {
-        const taskGrid = document.getElementById('allTasksGrid');
-        if (!taskGrid) return;
-
-        let filteredTasks = taskManager.tasks;
-
-        if (taskManager.currentFilter !== 'all') {
-            filteredTasks = taskManager.tasks.filter(t => t.priority === taskManager.currentFilter);
-        }
-
-        if (filteredTasks.length === 0) {
-            taskGrid.innerHTML = '<div class="no-tasks"><p>No tasks found.</p></div>';
-            return;
-        }
-
-        taskGrid.innerHTML = filteredTasks.map(task => createTaskElement(task)).join('');
-    }
-
-    // Filter tasks
-    function filterTasks(filter) {
-        taskManager.currentFilter = filter;
-        renderAllTasks();
-    }
-
-    // Toggle task
-    async function toggleTask(taskId) {
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks/complete`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ taskId: taskId })
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                await loadTasksFromServer();
-                showNotification('Task updated!', 'success');
-            } else {
-                showNotification('Failed to update task', 'error');
-            }
-        } catch (error) {
-            console.error('Error toggling task:', error);
-            showNotification('Error updating task', 'error');
-        }
-    }
-
-    // Add task
-    async function addTask(event) {
-        event.preventDefault();
-
-        const taskData = {
-            title: document.getElementById('taskTitle').value.trim(),
-            description: document.getElementById('taskDescription').value.trim(),
-            category: document.getElementById('taskCategory').value,
-            priority: document.getElementById('taskPriority').value,
-            dueDate: document.getElementById('taskDueDate').value,
-            dueTime: document.getElementById('taskDueTime').value || '',
-            studentEmail: getCurrentUserEmail()
-        };
-
-        if (!taskData.title || !taskData.category || !taskData.priority || !taskData.dueDate) {
-            showNotification('Please fill in all required fields', 'error');
-            return;
-        }
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks/add`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(taskData)
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                await loadTasksFromServer();
-                closeAddTaskModal();
-                document.querySelector('.task-form').reset();
-                showNotification('Task added successfully!', 'success');
-            } else {
-                showNotification('Failed to add task', 'error');
-            }
-        } catch (error) {
-            console.error('Error adding task:', error);
-            showNotification('Error connecting to server', 'error');
-        }
-    }
-
-    // Delete task
-    async function deleteTask(taskId) {
-        if (!confirm('Are you sure you want to delete this task?')) return;
-
-        try {
-            const response = await fetch(`${API_BASE_URL}/tasks/delete?id=${taskId}`, {
-                method: 'DELETE'
-            });
-
-            const result = await response.json();
-
-            if (result.success) {
-                await loadTasksFromServer();
-                showNotification('Task deleted!', 'success');
-            } else {
-                showNotification('Failed to delete task', 'error');
-            }
-        } catch (error) {
-            console.error('Error deleting task:', error);
-            showNotification('Error deleting task', 'error');
-        }
-    }
-
-    // Show notification
-    function showNotification(message, type = 'info') {
-        const existing = document.querySelector('.notification');
-        if (existing) existing.remove();
-
-        const notification = document.createElement('div');
-        notification.className = `notification notification-${type}`;
-        notification.textContent = message;
-
-        const colors = { error: '#ef4444', success: '#10b981', info: '#3b82f6' };
-
-        notification.style.cssText = `
-        position: fixed; top: 20px; right: 20px; background: ${colors[type]};
-        color: white; padding: 1rem 1.5rem; border-radius: 8px;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.15); z-index: 10000;
-        font-weight: 600; max-width: 300px; animation: slideIn 0.3s ease;
-    `;
-
-        document.body.appendChild(notification);
-        setTimeout(() => notification.remove(), 4000);
-    }
-
-    // Modal functions
-    function showAddTaskModal() {
-        document.getElementById('addTaskModal').classList.add('active');
-        document.getElementById('taskDueDate').setAttribute('min', new Date().toISOString().split('T')[0]);
-    }
-
-    function closeAddTaskModal() {
-        document.getElementById('addTaskModal').classList.remove('active');
-        document.querySelector('.task-form').reset();
-    }
-
-    // Tab switching
-    function switchTab(tabName) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(link => link.classList.remove('active'));
-
-        const tab = document.getElementById(tabName);
-        if (tab) tab.classList.add('active');
-
-        const link = document.querySelector(`[data-tab="${tabName}"]`);
-        if (link) link.classList.add('active');
-    }
-
-    // Logout
-    function logout() {
-        if (confirm('Are you sure you want to logout?')) {
-            localStorage.removeItem('currentUser');
-            showNotification('Logged out successfully!', 'success');
-            setTimeout(() => window.location.href = 'index.html', 1000);
-        }
-    }
-
-    // Initialize
-    document.addEventListener('DOMContentLoaded', function() {
-        checkAuth();
-        loadTasksFromServer();
-
-        document.querySelectorAll('.nav-link').forEach(link => {
-            link.addEventListener('click', function(e) {
-                e.preventDefault();
-                const tabName = this.getAttribute('data-tab');
-
-                // Handle category clicks
-                if (['study', 'personal', 'lab', 'project'].includes(tabName)) {
-                    showCategoryTasks(tabName);
-                }
-                // Handle completed/archived clicks
-                else if (tabName === 'completed') {
-                    showCompletedTasks();
-                }
-                else if (tabName === 'archived') {
-                    showArchivedTasks();
-                }
-                // Handle regular tabs
-                else {
-                    switchTab(tabName);
-                    // Reset header when going to all-tasks
-                    if (tabName === 'all-tasks') {
-                        const pageHeader = document.querySelector('#all-tasks .page-header h1');
-                        if (pageHeader) pageHeader.textContent = 'All Tasks';
-                        renderAllTasks();
-                    }
-                }
-            });
-        });
-
-        document.getElementById('addTaskModal').addEventListener('click', function(e) {
-            if (e.target === this) closeAddTaskModal();
-        });
-
-        const style = document.createElement('style');
-        style.textContent = `
-        @keyframes slideIn {
-            from { transform: translateX(100%); opacity: 0; }
-            to { transform: translateX(0); opacity: 1; }
-        }
-        .no-tasks { text-align: center; padding: 40px; color: #64748b; }
-        .completed-task { text-decoration: line-through; opacity: 0.7; }
-    `;
-        document.head.appendChild(style);
-    });
-    // Show tasks by category
-    function showCategoryTasks(categoryName) {
-        switchTab('all-tasks');
-
-        const taskGrid = document.getElementById('allTasksGrid');
-        if (!taskGrid) return;
-
-        const filteredTasks = taskManager.tasks.filter(task => {
-            return task.category.toLowerCase().includes(categoryName.toLowerCase());
-        });
-
-        // Update page header
-        const pageHeader = document.querySelector('#all-tasks .page-header h1');
-        if (pageHeader) {
-            pageHeader.textContent = `${categoryName.charAt(0).toUpperCase() + categoryName.slice(1)} Tasks`;
-        }
-
-        if (filteredTasks.length === 0) {
-            taskGrid.innerHTML = `<div class="no-tasks"><p>No ${categoryName} tasks found. Click "Add Task" to create one!</p></div>`;
-            return;
-        }
-
-        taskGrid.innerHTML = filteredTasks.map(task => createTaskElement(task)).join('');
-    }
-
-    // Show completed tasks
-    function showCompletedTasks() {
-        switchTab('all-tasks');
-
-        const taskGrid = document.getElementById('allTasksGrid');
-        const pageHeader = document.querySelector('#all-tasks .page-header h1');
-        if (pageHeader) pageHeader.textContent = 'Completed Tasks';
-
-        const completedTasks = taskManager.tasks.filter(t => t.completed);
-
-        if (completedTasks.length === 0) {
-            taskGrid.innerHTML = '<div class="no-tasks"><p>No completed tasks yet!</p></div>';
-            return;
-        }
-
-        taskGrid.innerHTML = completedTasks.map(task => createTaskElement(task)).join('');
-    }
-
-    // Show archived tasks
-    function showArchivedTasks() {
-        switchTab('all-tasks');
-
-        const taskGrid = document.getElementById('allTasksGrid');
-        const pageHeader = document.querySelector('#all-tasks .page-header h1');
-        if (pageHeader) pageHeader.textContent = 'Archived Tasks';
-
-        taskGrid.innerHTML = '<div class="no-tasks"><p>Archived tasks feature coming soon!</p></div>';
-    }
-</script>
+<!-- External Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script src="auth-config.js"></script>
+<script src="dashboard-script.js"></script>
 </body>
 </html>
