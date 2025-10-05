@@ -3,3 +3,5 @@
 4|chemistry|expt 1 record|lab/Practical work|high|2025-10-05T23:59:59|false|2025-10-04T13:44:24.254743|null|divyanair@gmail.com
 5|java-oop|project presentation|Projects|medium|2025-10-17T23:59:59|false|2025-10-04T13:44:49.062114900|null|divyanair@gmail.com
 6|dsa|internal exam|Exams|low|2025-10-23T23:59:59|false|2025-10-04T13:45:11.573894500|null|divyanair@gmail.com
+7|chemistry record|expt 1 record|lab/Practical work|high|2025-10-05T23:59:59|true|2025-10-04T14:09:07.028661|2025-10-04T14:10:34.360692400|bhagyas@gmail.com
+8|oop mini project||Projects|medium|2025-10-17T23:59:59|false|2025-10-04T14:09:28.956258100|null|bhagyas@gmail.com

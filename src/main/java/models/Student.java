@@ -4,92 +4,33 @@ import java.time.LocalDateTime;
 
 /**
  * Student - Represents a student user in the system
- * Demonstrates OOP principle: Encapsulation
+ * Demonstrates OOP principles: Inheritance and Encapsulation
  */
-public class Student {
-    private String email;
-    private String firstName;
-    private String lastName;
+public class Student extends User {
+    // ONLY student-specific fields
     private String studentId;
     private String major;
-    private String hashedPassword;
-    private LocalDateTime createdAt;
-    private LocalDateTime lastLoginAt;
-    private boolean isActive;
 
     public Student() {
-        this.createdAt = LocalDateTime.now();
-        this.isActive = true;
+        super(); // Call parent constructor
     }
 
     public Student(String email, String firstName, String lastName,
                    String studentId, String major, String hashedPassword) {
-        this();
-        this.email = email;
-        this.firstName = firstName;
-        this.lastName = lastName;
+        super(email, firstName, lastName, hashedPassword); // Call parent constructor
         this.studentId = studentId;
         this.major = major;
-        this.hashedPassword = hashedPassword;
     }
 
-    // Getters and Setters
-    public String getEmail() { return email; }
-    public void setEmail(String email) { this.email = email; }
-
-    public String getFirstName() { return firstName; }
-    public void setFirstName(String firstName) { this.firstName = firstName; }
-
-    public String getLastName() { return lastName; }
-    public void setLastName(String lastName) { this.lastName = lastName; }
-
+    // Student-specific getters and setters
     public String getStudentId() { return studentId; }
     public void setStudentId(String studentId) { this.studentId = studentId; }
 
     public String getMajor() { return major; }
     public void setMajor(String major) { this.major = major; }
 
-    public String getHashedPassword() { return hashedPassword; }
-    public void setHashedPassword(String hashedPassword) { this.hashedPassword = hashedPassword; }
-
-    public LocalDateTime getCreatedAt() { return createdAt; }
-    public void setCreatedAt(LocalDateTime createdAt) { this.createdAt = createdAt; }
-
-    public LocalDateTime getLastLoginAt() { return lastLoginAt; }
-    public void setLastLoginAt(LocalDateTime lastLoginAt) { this.lastLoginAt = lastLoginAt; }
-
-    public boolean isActive() { return isActive; }
-    public void setActive(boolean active) { isActive = active; }
-
-    // Business Logic Methods
-    public String getFullName() {
-        return firstName + " " + lastName;
-    }
-
-    public String getInitials() {
-        StringBuilder initials = new StringBuilder();
-        if (firstName != null && !firstName.isEmpty()) {
-            initials.append(firstName.charAt(0));
-        }
-        if (lastName != null && !lastName.isEmpty()) {
-            initials.append(lastName.charAt(0));
-        }
-        return initials.toString().toUpperCase();
-    }
-
-    public void updateLastLogin() {
-        this.lastLoginAt = LocalDateTime.now();
-    }
-
-    public void deactivate() {
-        this.isActive = false;
-    }
-
-    public void activate() {
-        this.isActive = true;
-    }
-
-    // JSON conversion for frontend
+    // Override abstract methods from User
+    @Override
     public String toJson() {
         return String.format(
                 "{\"email\":\"%s\",\"firstName\":\"%s\",\"lastName\":\"%s\"," +
@@ -102,7 +43,7 @@ public class Student {
         );
     }
 
-    // File storage format
+    @Override
     public String toFileString() {
         return String.join("|",
                 email != null ? email : "",
