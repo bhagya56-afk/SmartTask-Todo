@@ -176,7 +176,7 @@ async function toggleTask(taskId) {
 }
 
 async function deleteTask(taskId) {
-    if (!confirm('Are you sure you want to delete this task?')) return;
+
 
     try {
         const response = await fetch(`${API_BASE_URL}/tasks/delete?id=${taskId}`, {
@@ -257,7 +257,7 @@ function createTaskHTML(task) {
 
     const categoryEmojis = {
         'study/Academics': '📚',
-        'personal': '👤',
+        'Assignments': '🖋️',
         'lab/Practical work': '🧪',
         'Projects': '🗃️',
         'Exams': '📃',
@@ -350,7 +350,7 @@ function handleTabSwitch(e) {
     e.preventDefault();
     const tabName = e.target.getAttribute('data-tab');
 
-    if (['study', 'personal', 'lab', 'project'].includes(tabName)) {
+    if (['study', 'Assignments', 'lab', 'project'].includes(tabName)) {
         showCategoryTasks(tabName);
     } else if (tabName === 'completed') {
         showCompletedTasks();
@@ -444,8 +444,6 @@ function closeModal() {
 // ===========================
 
 async function logout() {
-    if (!confirm('Are you sure you want to logout?')) return;
-
     try {
         await supabase.auth.signOut();
         showSuccess('Logged out successfully!');
@@ -455,6 +453,7 @@ async function logout() {
         showError('Error logging out');
     }
 }
+
 
 // ===========================
 // Initialize
